@@ -1,0 +1,37 @@
+version: "3.9"
+
+services:
+  db:
+    image: postgres:16
+    container_name: cloudtask-postgres
+    environment:
+      POSTGRES_DB: cloudtask
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  backend:
+    build: ./app/backend
+    container_name: cloudtask-backend
+    ports:
+      - "3000:3000"
+    env_file:
+      - ./app/backend/.env
+    depends_on:
+      - db
+
+  frontend:
+    build: ./app/frontend
+    container_name: cloudtask-frontend
+    ports:
+      - "5173:5173"
+    env_file:
+      - ./app/frontend/.env
+    depends_on:
+      - backend
+
+volumes:
+  pgdata:

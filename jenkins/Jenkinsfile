@@ -1,0 +1,87 @@
+pipeline {
+    agent any
+
+    environment {
+        AWS_REGION = 'eu-central-1'
+        DOCKER_IMAGE = 'YOUR_DOCKERHUB_USERNAME/cloudtask-backend'
+        S3_BUCKET = 'YOUR_FRONTEND_BUCKET_NAME'
+        CLOUDFRONT_ID = 'YOUR_CLOUDFRONT_ID'
+    }
+
+    stages {
+
+        stage('Checkout') {
+            steps {
+                git branch: 'main', url: 'https://github.com/YOUR_USERNAME/cloudtask-pro-aws.git'
+            }
+        }
+
+        stage('Build Backend Image') {
+            steps {
+                dir('app/backend') {
+                    sh 'docker build -t $DOCKER_IMAGE:latest .'
+                }
+            }
+        }
+
+        stage('Push Docker Image') {
+            steps {
+                withCredentials([usernamePassword(credentialsId: 'dockerhub-creds', usernameVariable: 'USER', passwordVariable: 'PASS')]) {
+                    sh '''
+                    echo $PASS | docker login -u $USER --password-stdin
+                    docker push $DOCKER_IMAGE:latest
+                    '''
+                }
+            }
+        }
+
+        stage('Build Frontend') {
+            steps {
+                dir('app/frontend') {
+                    sh '''
+                    npm install
+                    npm run build
+                    '''
+                }
+            }
+        }
+
+        stage('Deploy Frontend to S3') {
+            steps {
+                dir('app/frontend') {
+                    sh '''
+                    aws s3 sync dist/ s3://$S3_BUCKET --delete
+                    '''
+                }
+            }
+        }
+
+        stage('Invalidate CloudFront') {
+            steps {
+                sh '''
+                aws cloudfront create-invalidation \
+                  --distribution-id $CLOUDFRONT_ID \
+                  --paths "/*"
+                '''
+            }
+        }
+
+        stage('Deploy Backend (SSM)') {
+            steps {
+                sh '''
+                aws ssm send-command \
+                  --document-name "AWS-RunShellScript" \
+                  --targets "Key=tag:Name,Values=cloudtask-pro-dev-app" \
+                  --parameters commands=[
+                    "docker pull $DOCKER_IMAGE:latest",
+                    "docker stop cloudtask-backend || true",
+                    "docker rm cloudtask-backend || true",
+                    "docker run -d -p 3000:3000 --name cloudtask-backend $DOCKER_IMAGE:latest"
+                  ] \
+                  --region $AWS_REGION
+                '''
+            }
+        }
+
+    }
+}
