@@ -30,7 +30,7 @@ resource "aws_s3_bucket_versioning" "artifacts" {
   }
 }
 
-resource "aws_s3_bucket_public_access_block" "frontend" {
+resource "aws_s3_bucket_public_access_block" "frontend" { #block public access to the bucket to ensure it's only accessible through CloudFront
   bucket = aws_s3_bucket.frontend.id
 
   block_public_acls       = true
@@ -39,7 +39,7 @@ resource "aws_s3_bucket_public_access_block" "frontend" {
   restrict_public_buckets = true
 }
 
-resource "aws_s3_bucket_public_access_block" "artifacts" {
+resource "aws_s3_bucket_public_access_block" "artifacts" { #block public access to the bucket to ensure it's only accessible through CloudFront
   bucket = aws_s3_bucket.artifacts.id
 
   block_public_acls       = true
