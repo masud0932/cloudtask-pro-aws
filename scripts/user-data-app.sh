@@ -20,7 +20,7 @@ yum install -y aws-cli
 usermod -aG docker ec2-user
 
 # Variables from Terraform
-APP_SECRET_ARN="${app_secret_arn}"
+APP_SECRET_ARN="${app_secret_arn}" # ARN of the secret containing app config (DB host, port, name, and DB secret ARN) 
 AWS_REGION="${aws_region}"
 APP_PORT="${app_port}"
 
@@ -55,7 +55,7 @@ DB_PASSWORD=$(echo $DB_SECRET_JSON | jq -r '.password')
 echo "Running backend container..."
 
 # Pull your backend image (replace later with ECR)
-docker pull node:20-alpine
+docker pull node:22-alpine
 
 # Run container
 docker run -d \
@@ -68,7 +68,7 @@ docker run -d \
   -e DB_NAME=$DB_NAME \
   -e DB_USER=$DB_USER \
   -e DB_PASSWORD=$DB_PASSWORD \
-  node:20-alpine \
+  node:22-alpine \
   sh -c "npm install -g serve && serve -s /usr/src/app"
 
 echo "=== App bootstrap completed ==="
