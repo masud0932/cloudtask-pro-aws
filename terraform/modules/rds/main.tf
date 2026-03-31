@@ -29,10 +29,10 @@ resource "aws_db_parameter_group" "this" {
 resource "aws_db_instance" "this" {
   identifier                      = "${var.name_prefix}-postgres"
   engine                          = "postgres"
-  engine_version                  = "16.3"
+  engine_version                  = "16"
   instance_class                  = var.db_instance_class
-  allocated_storage               = 8
-  max_allocated_storage           = 16
+  allocated_storage               = 20
+  max_allocated_storage           = 20
   storage_type                    = "gp3"
   storage_encrypted               = true
   db_name                         = var.db_name
