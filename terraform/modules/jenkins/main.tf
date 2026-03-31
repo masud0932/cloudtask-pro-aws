@@ -1,3 +1,8 @@
+resource "aws_key_pair" "this" {
+  key_name   = "cloudtask-key"
+  public_key = file(pathexpand("~/.ssh/id_ed25519.pub"))
+}
+
 resource "aws_instance" "this" {
   ami                         = var.ami_id
   instance_type               = var.instance_type
@@ -5,6 +10,7 @@ resource "aws_instance" "this" {
   vpc_security_group_ids      = var.security_group_ids
   iam_instance_profile        = var.instance_profile_name
   associate_public_ip_address = true
+  key_name                    = aws_key_pair.this.key_name
   user_data                   = var.user_data
 
   root_block_device {
