@@ -37,7 +37,7 @@ resource "aws_db_instance" "this" {
   storage_encrypted               = true
   db_name                         = var.db_name
   username                        = var.master_username
-  manage_master_user_password     = true
+  manage_master_user_password     = true # Let AWS manage the master user password, it will be stored securely in AWS Secrets Manager
   port                            = var.db_port
   db_subnet_group_name            = aws_db_subnet_group.this.name
   vpc_security_group_ids          = var.vpc_security_group_ids
