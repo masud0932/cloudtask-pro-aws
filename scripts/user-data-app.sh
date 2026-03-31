@@ -60,7 +60,7 @@ docker pull node:22-alpine
 # Run container
 docker run -d \
   --name cloudtask-backend \
-  -p ${APP_PORT}:3000 \
+  -p $APP_PORT:3000 \
   -e PORT=3000 \
   -e NODE_ENV=$NODE_ENV \
   -e DB_HOST=$DB_HOST \
