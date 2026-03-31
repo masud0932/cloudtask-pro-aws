@@ -114,3 +114,7 @@ variable "alert_email_addresses" {
   type    = list(string)
   default = []
 }
+
+variable "key_name" {
+  type = string
+}
