@@ -27,7 +27,7 @@ pipeline {
             }
         }
 
-        stage('Verify Main Branch') {
+        stage('Verify Allowed Branch') {
             steps {
                 script {
                     def branch = env.BRANCH_NAME
@@ -40,8 +40,10 @@ pipeline {
 
                     echo "Current branch: ${branch}"
 
-                    if (branch != 'main') {
-                        error("Pipeline runs only for main branch. Current branch: ${branch}")
+                    def allowedBranches = ['main', 'HEA']
+
+                    if (!allowedBranches.contains(branch)) {
+                        error("Pipeline runs only for branches: ${allowedBranches.join(', ')}. Current branch: ${branch}")
                     }
                 }
             }
