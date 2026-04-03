@@ -37,8 +37,14 @@ app.use(errorHandler);
 
 async function startServer() {
   try {
-    await initDb();
-    app.listen(PORT, () => {
+    if (process.env.RUN_DB_INIT === "true") {
+      console.log("RUN_DB_INIT=true, initializing database...");
+      await initDb();
+    } else {
+      console.log("Skipping database initialization");
+    }
+
+    app.listen(PORT, "0.0.0.0", () => {
       console.log(`Backend server running on port ${PORT}`);
     });
   } catch (error) {
