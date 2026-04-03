@@ -27,33 +27,6 @@ pipeline {
             }
         }
 
-        stage('Verify Main Branch') {
-            steps {
-                script {
-                    def branch = env.BRANCH_NAME ?: env.GIT_BRANCH ?: ""
-                    branch = branch.replace('origin/', '').trim()
-
-                    echo "Detected branch: ${branch}"
-
-                    if (branch != 'main') {
-                        error("Pipeline runs only for main branch. Current branch: ${branch}")
-                    }
-                }
-            }
-        }
-
-        stage('Debug Branch') {
-    steps {
-        script {
-            echo "BRANCH_NAME = ${env.BRANCH_NAME}"
-            echo "GIT_BRANCH = ${env.GIT_BRANCH}"
-            echo "GIT_LOCAL_BRANCH = ${env.GIT_LOCAL_BRANCH}"
-            sh 'git branch -a || true'
-            sh 'git rev-parse --abbrev-ref HEAD || true'
-        }
-    }
-}
-
         stage('Build Backend Docker Image') {
             steps {
                 dir('app/backend') {
