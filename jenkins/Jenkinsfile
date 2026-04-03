@@ -1,7 +1,8 @@
 pipeline {
     agent any
 
-       options {
+    options {
+        timestamps()
         disableConcurrentBuilds()
     }
 
@@ -13,11 +14,6 @@ pipeline {
         APP_CONTAINER_NAME = 'cloudtask-pro'
         ALB_HEALTHCHECK_URL = 'http://cloudtask-pro-dev-alb-1774915696.eu-central-1.elb.amazonaws.com/health'
         APP_TARGET_TAG     = 'cloudtask-pro-dev-app'
-    }
-
-    options {
-        timestamps()
-        disableConcurrentBuilds()
     }
 
     triggers {
