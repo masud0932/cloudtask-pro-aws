@@ -1,6 +1,10 @@
 pipeline {
     agent any
 
+       options {
+        disableConcurrentBuilds()
+    }
+
     environment {
         AWS_REGION         = 'eu-central-1'
         DOCKER_IMAGE       = 'masudrana09/cloudtask-pro:latest'
