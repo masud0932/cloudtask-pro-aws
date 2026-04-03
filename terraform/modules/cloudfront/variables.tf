@@ -3,7 +3,7 @@ variable "name_prefix" {
 }
 
 variable "aliases" {
-  type = list(string)
+  type    = list(string)
   default = []
 }
 

@@ -87,7 +87,7 @@ resource "aws_route_table" "public" { #single route table for all public subnets
 
   route {
     cidr_block = "0.0.0.0/0" #route all outbound traffic to IGW (vpc inside to outside)
-    gateway_id = aws_internet_gateway.this.id 
+    gateway_id = aws_internet_gateway.this.id
   }
 
   tags = merge(var.tags, {

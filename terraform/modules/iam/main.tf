@@ -59,8 +59,8 @@ resource "aws_iam_role_policy_attachment" "jenkins_cloudwatch" {
 
 data "aws_iam_policy_document" "app_custom" {
   statement {
-    sid     = "ReadSecrets"
-    actions = ["secretsmanager:GetSecretValue", "secretsmanager:DescribeSecret"]
+    sid       = "ReadSecrets"
+    actions   = ["secretsmanager:GetSecretValue", "secretsmanager:DescribeSecret"]
     resources = local.secret_arns
   }
 

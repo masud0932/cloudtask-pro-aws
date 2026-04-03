@@ -63,7 +63,7 @@ resource "aws_cloudfront_distribution" "this" {
   })
 }
 
-data "aws_iam_policy_document" "frontend_bucket_policy" {  #create a policy document that allows CloudFront to read from the S3 bucket
+data "aws_iam_policy_document" "frontend_bucket_policy" { #create a policy document that allows CloudFront to read from the S3 bucket
   statement {
     sid = "AllowCloudFrontRead"
 
@@ -83,7 +83,7 @@ data "aws_iam_policy_document" "frontend_bucket_policy" {  #create a policy docu
   }
 }
 
-resource "aws_s3_bucket_policy" "frontend" {   #attach the policy to the bucket to allow CloudFront to access it
+resource "aws_s3_bucket_policy" "frontend" { #attach the policy to the bucket to allow CloudFront to access it
   bucket = var.s3_bucket_name
   policy = data.aws_iam_policy_document.frontend_bucket_policy.json
 }
