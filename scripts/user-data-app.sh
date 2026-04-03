@@ -39,11 +39,11 @@ set -euo pipefail
 
 exec > >(tee -a /var/log/deploy-backend.log | logger -t deploy-backend -s 2>/dev/console) 2>&1
 
-APP_SECRET_ARN="${APP_SECRET_ARN}"
-AWS_REGION="${AWS_REGION}"
-APP_PORT="${APP_PORT}"
-DOCKER_IMAGE="${DOCKER_IMAGE}"
-APP_CONTAINER_NAME="${APP_CONTAINER_NAME}"
+APP_SECRET_ARN="$APP_SECRET_ARN"
+AWS_REGION="$AWS_REGION"
+APP_PORT="$APP_PORT"
+DOCKER_IMAGE="masudrana09/cloudtask-pro:latest"
+APP_CONTAINER_NAME="cloudtask-pro"
 
 echo "=== Starting backend deployment ==="
 
