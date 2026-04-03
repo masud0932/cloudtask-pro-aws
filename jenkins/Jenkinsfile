@@ -27,23 +27,16 @@ pipeline {
             }
         }
 
-        stage('Verify Allowed Branch') {
+        stage('Verify Main Branch') {
             steps {
                 script {
-                    def branch = env.BRANCH_NAME
-                    if (!branch?.trim()) {
-                        branch = sh(
-                            script: "git rev-parse --abbrev-ref HEAD",
-                            returnStdout: true
-                        ).trim()
-                    }
+                    def branch = env.BRANCH_NAME ?: env.GIT_BRANCH ?: ""
+                    branch = branch.replace('origin/', '').trim()
 
-                    echo "Current branch: ${branch}"
+                    echo "Detected branch: ${branch}"
 
-                    def allowedBranches = ['main', 'HEA']
-
-                    if (!allowedBranches.contains(branch)) {
-                        error("Pipeline runs only for branches: ${allowedBranches.join(', ')}. Current branch: ${branch}")
+                    if (branch != 'main') {
+                        error("Pipeline runs only for main branch. Current branch: ${branch}")
                     }
                 }
             }
