@@ -1,5 +1,5 @@
 output "frontend_url" {
-  value = "https://${module.cloudfront.domain_name}"
+  value = "http://${module.cloudfront.domain_name}"
 }
 
 output "api_url" {
