@@ -2,34 +2,72 @@ pipeline {
     agent any
 
     environment {
-        AWS_REGION = 'eu-central-1'
-        DOCKER_IMAGE = 'YOUR_DOCKERHUB_USERNAME/cloudtask-backend'
-        S3_BUCKET = 'YOUR_FRONTEND_BUCKET_NAME'
-        CLOUDFRONT_ID = 'YOUR_CLOUDFRONT_ID'
+        AWS_REGION         = 'eu-central-1'
+        DOCKER_IMAGE       = 'masudrana09/cloudtask-pro:latest'
+        FRONTEND_BUCKET    = 'cloudtask-pro-dev-frontend-ccuh8h'
+        CLOUDFRONT_DIST_ID = 'E35I3HA9GKX0P9'
+        APP_CONTAINER_NAME = 'cloudtask-pro'
+        ALB_HEALTHCHECK_URL = 'http://cloudtask-pro-dev-alb-1774915696.eu-central-1.elb.amazonaws.com/health'
+        APP_TARGET_TAG     = 'cloudtask-pro-dev-app'
+    }
+
+    options {
+        timestamps()
+        disableConcurrentBuilds()
+    }
+
+    triggers {
+        githubPush()
     }
 
     stages {
-
         stage('Checkout') {
             steps {
-                git branch: 'main', url: 'https://github.com/YOUR_USERNAME/cloudtask-pro-aws.git'
+                checkout scm
             }
         }
 
-        stage('Build Backend Image') {
+        stage('Verify Main Branch') {
             steps {
-                dir('app/backend') {
-                    sh 'docker build -t $DOCKER_IMAGE:latest .'
+                script {
+                    def branch = env.BRANCH_NAME
+                    if (!branch?.trim()) {
+                        branch = sh(
+                            script: "git rev-parse --abbrev-ref HEAD",
+                            returnStdout: true
+                        ).trim()
+                    }
+
+                    echo "Current branch: ${branch}"
+
+                    if (branch != 'main') {
+                        error("Pipeline runs only for main branch. Current branch: ${branch}")
+                    }
                 }
             }
         }
 
-        stage('Push Docker Image') {
+        stage('Build Backend Docker Image') {
             steps {
-                withCredentials([usernamePassword(credentialsId: 'dockerhub-creds', usernameVariable: 'USER', passwordVariable: 'PASS')]) {
+                dir('app/backend') {
                     sh '''
-                    echo $PASS | docker login -u $USER --password-stdin
-                    docker push $DOCKER_IMAGE:latest
+                        docker build -t $DOCKER_IMAGE .
+                    '''
+                }
+            }
+        }
+
+        stage('Push Backend Image to Docker Hub') {
+            steps {
+                withCredentials([usernamePassword(
+                    credentialsId: 'dockerhub-creds',
+                    usernameVariable: 'DOCKERHUB_USER',
+                    passwordVariable: 'DOCKERHUB_PASS'
+                )]) {
+                    sh '''
+                        echo "$DOCKERHUB_PASS" | docker login -u "$DOCKERHUB_USER" --password-stdin
+                        docker push $DOCKER_IMAGE
+                        docker logout
                     '''
                 }
             }
@@ -39,8 +77,8 @@ pipeline {
             steps {
                 dir('app/frontend') {
                     sh '''
-                    npm install
-                    npm run build
+                        npm install
+                        npm run build
                     '''
                 }
             }
@@ -50,38 +88,92 @@ pipeline {
             steps {
                 dir('app/frontend') {
                     sh '''
-                    aws s3 sync dist/ s3://$S3_BUCKET --delete
+                        aws s3 sync dist/ s3://$FRONTEND_BUCKET --delete --region $AWS_REGION
                     '''
                 }
             }
         }
 
-        stage('Invalidate CloudFront') {
+        stage('Invalidate CloudFront Cache') {
             steps {
                 sh '''
-                aws cloudfront create-invalidation \
-                  --distribution-id $CLOUDFRONT_ID \
-                  --paths "/*"
+                    aws cloudfront create-invalidation \
+                      --distribution-id $CLOUDFRONT_DIST_ID \
+                      --paths "/*"
                 '''
             }
         }
 
-        stage('Deploy Backend (SSM)') {
+        stage('Deploy Backend to App EC2 via SSM') {
             steps {
                 sh '''
-                aws ssm send-command \
-                  --document-name "AWS-RunShellScript" \
-                  --targets "Key=tag:Name,Values=cloudtask-pro-dev-app" \
-                  --parameters commands=[
-                    "docker pull $DOCKER_IMAGE:latest",
-                    "docker stop cloudtask-backend || true",
-                    "docker rm cloudtask-backend || true",
-                    "docker run -d -p 3000:3000 --name cloudtask-backend $DOCKER_IMAGE:latest"
-                  ] \
-                  --region $AWS_REGION
+                    COMMAND_ID=$(aws ssm send-command \
+                      --document-name "AWS-RunShellScript" \
+                      --targets "Key=tag:Name,Values=$APP_TARGET_TAG" \
+                      --parameters 'commands=["/home/ec2-user/deploy-backend.sh"]' \
+                      --region $AWS_REGION \
+                      --query "Command.CommandId" \
+                      --output text)
+
+                    echo "SSM Command ID: $COMMAND_ID"
+
+                    for i in $(seq 1 12); do
+                      STATUS=$(aws ssm list-command-invocations \
+                        --command-id "$COMMAND_ID" \
+                        --details \
+                        --region $AWS_REGION \
+                        --query "CommandInvocations[0].Status" \
+                        --output text 2>/dev/null || echo "Pending")
+
+                      echo "Current SSM status: $STATUS"
+
+                      if [ "$STATUS" = "Success" ]; then
+                        echo "SSM deployment succeeded"
+                        exit 0
+                      fi
+
+                      if [ "$STATUS" = "Failed" ] || [ "$STATUS" = "Cancelled" ] || [ "$STATUS" = "TimedOut" ] || [ "$STATUS" = "Cancelling" ]; then
+                        echo "SSM deployment failed with status: $STATUS"
+                        aws ssm list-command-invocations \
+                          --command-id "$COMMAND_ID" \
+                          --details \
+                          --region $AWS_REGION
+                        exit 1
+                      fi
+
+                      sleep 10
+                    done
+
+                    echo "SSM deployment timed out while waiting for success"
+                    aws ssm list-command-invocations \
+                      --command-id "$COMMAND_ID" \
+                      --details \
+                      --region $AWS_REGION
+                    exit 1
                 '''
             }
         }
 
+        stage('Backend Health Check') {
+            steps {
+                sh '''
+                    echo "Waiting for ALB health check..."
+                    sleep 20
+                    curl -f $ALB_HEALTHCHECK_URL
+                '''
+            }
+        }
+    }
+
+    post {
+        success {
+            echo 'Pipeline completed successfully.'
+        }
+        failure {
+            echo 'Pipeline failed. Check stage logs.'
+        }
+        always {
+            cleanWs()
+        }
     }
 }
