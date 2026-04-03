@@ -82,7 +82,7 @@ variable "app_instance_type" {
 
 variable "jenkins_instance_type" {
   type    = string
-  default = "t3.small"
+  default = "t3.medium"
 }
 
 variable "app_desired_capacity" {
@@ -113,4 +113,8 @@ variable "jenkins_allowed_cidrs" {
 variable "alert_email_addresses" {
   type    = list(string)
   default = []
+}
+
+variable "key_name" {
+  type = string
 }

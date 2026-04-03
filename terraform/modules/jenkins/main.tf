@@ -6,9 +6,10 @@ resource "aws_instance" "this" {
   iam_instance_profile        = var.instance_profile_name
   associate_public_ip_address = true
   user_data                   = var.user_data
+  key_name                    = var.key_name
 
   root_block_device {
-    volume_size           = 30
+    volume_size           = 16
     volume_type           = "gp3"
     encrypted             = true
     delete_on_termination = true

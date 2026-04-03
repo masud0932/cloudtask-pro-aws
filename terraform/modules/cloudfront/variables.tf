@@ -3,7 +3,8 @@ variable "name_prefix" {
 }
 
 variable "aliases" {
-  type = list(string)
+  type    = list(string)
+  default = []
 }
 
 variable "s3_bucket_name" {
@@ -15,10 +16,6 @@ variable "s3_bucket_arn" {
 }
 
 variable "s3_bucket_regional_domain" {
-  type = string
-}
-
-variable "acm_certificate_arn" {
   type = string
 }
 

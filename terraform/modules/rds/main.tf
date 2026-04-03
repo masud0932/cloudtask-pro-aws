@@ -29,15 +29,15 @@ resource "aws_db_parameter_group" "this" {
 resource "aws_db_instance" "this" {
   identifier                      = "${var.name_prefix}-postgres"
   engine                          = "postgres"
-  engine_version                  = "16.3"
+  engine_version                  = "16"
   instance_class                  = var.db_instance_class
   allocated_storage               = 20
-  max_allocated_storage           = 100
+  max_allocated_storage           = 20
   storage_type                    = "gp3"
   storage_encrypted               = true
   db_name                         = var.db_name
   username                        = var.master_username
-  manage_master_user_password     = true
+  manage_master_user_password     = true # Let AWS manage the master user password, it will be stored securely in AWS Secrets Manager
   port                            = var.db_port
   db_subnet_group_name            = aws_db_subnet_group.this.name
   vpc_security_group_ids          = var.vpc_security_group_ids

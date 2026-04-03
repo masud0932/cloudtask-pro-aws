@@ -22,10 +22,6 @@ variable "health_check_path" {
   type = string
 }
 
-variable "certificate_arn" {
-  type = string
-}
-
 variable "tags" {
   type    = map(string)
   default = {}

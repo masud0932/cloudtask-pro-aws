@@ -162,5 +162,6 @@ module "jenkins" {
   security_group_ids    = [module.security.jenkins_sg_id]
   instance_profile_name = module.iam.jenkins_instance_profile_name
   user_data             = templatefile("${path.module}/../../../scripts/user-data-jenkins.sh", {})
+  key_name              = var.key_name
   tags                  = local.common_tags
 }

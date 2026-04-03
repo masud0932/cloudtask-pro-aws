@@ -82,11 +82,11 @@ resource "aws_nat_gateway" "this" {
   })
 }
 
-resource "aws_route_table" "public" {
+resource "aws_route_table" "public" { #single route table for all public subnets
   vpc_id = aws_vpc.this.id
 
   route {
-    cidr_block = "0.0.0.0/0"
+    cidr_block = "0.0.0.0/0" #route all outbound traffic to IGW (vpc inside to outside)
     gateway_id = aws_internet_gateway.this.id
   }
 
