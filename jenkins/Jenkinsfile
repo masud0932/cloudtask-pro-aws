@@ -31,32 +31,6 @@ pipeline {
             }
         }
 
-        stage('Build Backend Docker Image') {
-            steps {
-                dir('app/backend') {
-                    sh '''
-                        docker build -t "$DOCKER_IMAGE" .
-                    '''
-                }
-            }
-        }
-
-        stage('Push Backend Image to Docker Hub') {
-            steps {
-                withCredentials([usernamePassword(
-                    credentialsId: 'dockerhub-creds',
-                    usernameVariable: 'DOCKERHUB_USER',
-                    passwordVariable: 'DOCKERHUB_PASS'
-                )]) {
-                    sh '''
-                        echo "$DOCKERHUB_PASS" | docker login -u "$DOCKERHUB_USER" --password-stdin
-                        docker push "$DOCKER_IMAGE"
-                        docker logout
-                    '''
-                }
-            }
-        }
-
         stage('Build Frontend') {
             steps {
                 dir('app/frontend') {
@@ -85,6 +59,32 @@ pipeline {
                       --distribution-id "$CLOUDFRONT_DIST_ID" \
                       --paths "/*"
                 '''
+            }
+        }
+        
+        stage('Build Backend Docker Image') {
+            steps {
+                dir('app/backend') {
+                    sh '''
+                        docker build -t "$DOCKER_IMAGE" .
+                    '''
+                }
+            }
+        }
+
+        stage('Push Backend Image to Docker Hub') {
+            steps {
+                withCredentials([usernamePassword(
+                    credentialsId: 'dockerhub-creds',
+                    usernameVariable: 'DOCKERHUB_USER',
+                    passwordVariable: 'DOCKERHUB_PASS'
+                )]) {
+                    sh '''
+                        echo "$DOCKERHUB_PASS" | docker login -u "$DOCKERHUB_USER" --password-stdin
+                        docker push "$DOCKER_IMAGE"
+                        docker logout
+                    '''
+                }
             }
         }
 
