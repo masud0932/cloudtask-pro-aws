@@ -9,10 +9,10 @@ pipeline {
     environment {
         AWS_REGION         = 'eu-central-1'
         DOCKER_IMAGE       = 'masudrana09/cloudtask-pro:latest'
-        FRONTEND_BUCKET    = 'cloudtask-pro-dev-frontend-ccuh8h'
-        CLOUDFRONT_DIST_ID = 'E35I3HA9GKX0P9'
+        FRONTEND_BUCKET    = 'cloudtask-pro-dev-frontend-tv3b5u'
+        CLOUDFRONT_DIST_ID = 'E1SK3QCHWO4ORJ'
         APP_CONTAINER_NAME = 'cloudtask-pro'
-        ALB_HEALTHCHECK_URL = 'http://cloudtask-pro-dev-alb-1774915696.eu-central-1.elb.amazonaws.com/health'
+        ALB_HEALTHCHECK_URL = 'http://cloudtask-pro-dev-alb-386477539.eu-central-1.elb.amazonaws.com/health'
         APP_TARGET_TAG     = 'cloudtask-pro-dev-app'
     }
 
