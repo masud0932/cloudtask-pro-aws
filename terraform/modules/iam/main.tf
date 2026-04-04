@@ -98,7 +98,7 @@ data "aws_iam_policy_document" "jenkins_custom" {
       "secretsmanager:GetSecretValue",
       "ssm:SendCommand",
       "ssm:GetCommandInvocation",
-      "ssm:GetCommandInvocation",
+      "ssm:ListCommandInvocations",
       "ssm:DescribeInstanceInformation"
     ]
     resources = ["*"]
