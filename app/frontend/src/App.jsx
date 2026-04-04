@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 
-const API_BASE_URL = import.meta.env.production.VITE_API_BASE_URL;
+const API_BASE_URL = import.meta.env.production.VITE_API_BASE_URL || "http://cloudtask-pro-dev-alb-386477539.eu-central-1.elb.amazonaws.com";
 
 export default function App() {
   const [dashboard, setDashboard] = useState(null);
