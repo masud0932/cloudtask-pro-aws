@@ -90,7 +90,7 @@ pipeline {
                 COMMAND_ID=$(aws ssm send-command \
                     --document-name "AWS-RunShellScript" \
                     --targets "Key=tag:Name,Values=cloudtask-pro-dev-app" \
-                    --parameters 'commands=["/home/ec2-user/deploy-backend.sh '"arn:aws:ec2:eu-central-1:349036691410:instance/i-0619727321a1288d5"' eu-central-1 3000 masudrana09/cloudtask-pro:latest cloudtask-pro"]' \
+                    --parameters 'commands=["/home/ec2-user/deploy-backend.sh '"arn:aws:ec2:eu-central-1:349036691410:instance/i-0dff01a1e38be7554"' eu-central-1 3000 masudrana09/cloudtask-pro:latest cloudtask-pro"]' \
                     --region eu-central-1 \
                     --query "Command.CommandId" \
                     --output text)
