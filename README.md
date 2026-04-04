@@ -810,3 +810,10 @@ Some background tasks can eventually be moved to serverless services such as:
 •	Amazon EventBridge
 This could improve scalability and reduce operational overhead for asynchronous processing tasks.
 
+---
+Screenshots
+
+The following screenshots can be added to better demonstrate the architecture, deployment workflow, and application functionality
+
+------
+
