@@ -1,5 +1,5 @@
 #!/bin/bash
-set -euo pipefail
+set -xeuo pipefail
 LOCK_FILE="/tmp/cloudtask-backend-deploy.lock"
 
 exec 200>"$LOCK_FILE"
@@ -72,14 +72,25 @@ docker run -d \
   -e DB_PASSWORD="$DB_PASSWORD" \
   "$DOCKER_IMAGE"
 
-echo "Waiting for container startup"
-sleep 15
+echo "Waiting for application health"
+for i in $(seq 1 18); do
+  if docker ps --format '{{.Names}}' | grep -q "^${APP_CONTAINER_NAME}$"; then
+    if curl -fsS "http://localhost:${APP_PORT}/health" >/dev/null; then
+      echo "Application health check passed"
+      echo "=== Backend deployment completed successfully ==="
+      exit 0
+    fi
+  else
+    echo "Container not running yet on attempt $i"
+  fi
 
-if ! docker ps --format '{{.Names}}' | grep -q "^${APP_CONTAINER_NAME}$"; then
-  echo "ERROR: Container is not running"
-  docker logs "$APP_CONTAINER_NAME" || true
-  exit 1
-fi
+  sleep 5
+done
+
+echo "ERROR: Application failed to become healthy"
+docker ps -a
+docker logs "$APP_CONTAINER_NAME" || true
+exit 1
 
 echo "Checking application health endpoint"
 for i in $(seq 1 12); do
