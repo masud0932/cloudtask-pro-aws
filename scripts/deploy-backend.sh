@@ -65,6 +65,7 @@ docker run -d \
   --restart unless-stopped \
   -e PORT=3000 \
   -e NODE_ENV="$NODE_ENV" \
+  -e RUN_DB_INIT=true \
   -e DB_HOST="$DB_HOST" \
   -e DB_PORT="$DB_PORT" \
   -e DB_NAME="$DB_NAME" \
