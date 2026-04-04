@@ -7,13 +7,17 @@ pipeline {
     }
 
     environment {
-        AWS_REGION         = 'eu-central-1'
-        DOCKER_IMAGE       = 'masudrana09/cloudtask-pro:latest'
-        FRONTEND_BUCKET    = 'cloudtask-pro-dev-frontend-tv3b5u'
-        CLOUDFRONT_DIST_ID = 'E1SK3QCHWO4ORJ'
-        APP_CONTAINER_NAME = 'cloudtask-pro'
+        AWS_REGION          = 'eu-central-1'
+        DOCKER_IMAGE        = 'masudrana09/cloudtask-pro:latest'
+        FRONTEND_BUCKET     = 'cloudtask-pro-dev-frontend-tv3b5u'
+        CLOUDFRONT_DIST_ID  = 'E1SK3QCHWO4ORJ'
+        APP_CONTAINER_NAME  = 'cloudtask-pro'
+        APP_PORT            = '3000'
+        APP_TARGET_TAG      = 'cloudtask-pro-dev-app'
         ALB_HEALTHCHECK_URL = 'http://cloudtask-pro-dev-alb-386477539.eu-central-1.elb.amazonaws.com/health'
-        APP_TARGET_TAG     = 'cloudtask-pro-dev-app'
+
+        // replace with your real app secret ARN
+        APP_SECRET_ARN      = 'arn:aws:secretsmanager:eu-central-1:349036691410:secret:cloudtask-pro-dev/app-config-D9xrld'
     }
 
     triggers {
@@ -31,7 +35,7 @@ pipeline {
             steps {
                 dir('app/backend') {
                     sh '''
-                        docker build -t $DOCKER_IMAGE .
+                        docker build -t "$DOCKER_IMAGE" .
                     '''
                 }
             }
@@ -46,7 +50,7 @@ pipeline {
                 )]) {
                     sh '''
                         echo "$DOCKERHUB_PASS" | docker login -u "$DOCKERHUB_USER" --password-stdin
-                        docker push $DOCKER_IMAGE
+                        docker push "$DOCKER_IMAGE"
                         docker logout
                     '''
                 }
@@ -57,7 +61,7 @@ pipeline {
             steps {
                 dir('app/frontend') {
                     sh '''
-                        npm install
+                        npm ci
                         npm run build
                     '''
                 }
@@ -68,7 +72,7 @@ pipeline {
             steps {
                 dir('app/frontend') {
                     sh '''
-                        aws s3 sync dist/ s3://$FRONTEND_BUCKET --delete --region $AWS_REGION
+                        aws s3 sync dist/ "s3://$FRONTEND_BUCKET" --delete --region "$AWS_REGION"
                     '''
                 }
             }
@@ -78,7 +82,7 @@ pipeline {
             steps {
                 sh '''
                     aws cloudfront create-invalidation \
-                      --distribution-id $CLOUDFRONT_DIST_ID \
+                      --distribution-id "$CLOUDFRONT_DIST_ID" \
                       --paths "/*"
                 '''
             }
@@ -87,23 +91,32 @@ pipeline {
         stage('Deploy Backend to App EC2 via SSM') {
             steps {
                 sh '''
-                COMMAND_ID=$(aws ssm send-command \
-                    --document-name "AWS-RunShellScript" \
-                    --targets "Key=tag:Name,Values=cloudtask-pro-dev-app" \
-                    --parameters 'commands=["/home/ec2-user/deploy-backend.sh '"arn:aws:ec2:eu-central-1:349036691410:instance/i-0dff01a1e38be7554"' eu-central-1 3000 masudrana09/cloudtask-pro:latest cloudtask-pro"]' \
-                    --region eu-central-1 \
-                    --query "Command.CommandId" \
-                    --output text)
+                    set -e
+
+                    SCRIPT_PATH="scripts/deploy-backend.sh"
+                    SCRIPT_B64=$(base64 -w 0 "$SCRIPT_PATH")
+
+                    COMMAND_ID=$(aws ssm send-command \
+                      --document-name "AWS-RunShellScript" \
+                      --targets "Key=tag:Name,Values=$APP_TARGET_TAG" \
+                      --region "$AWS_REGION" \
+                      --query "Command.CommandId" \
+                      --output text \
+                      --parameters commands="[
+                        \\"echo '$SCRIPT_B64' | base64 -d > /home/ec2-user/deploy-backend.sh\\",
+                        \\"chmod +x /home/ec2-user/deploy-backend.sh\\",
+                        \\"/home/ec2-user/deploy-backend.sh $APP_SECRET_ARN $AWS_REGION $APP_PORT $DOCKER_IMAGE $APP_CONTAINER_NAME\\"
+                      ]")
 
                     echo "SSM Command ID: $COMMAND_ID"
 
-                    for i in $(seq 1 12); do
+                    for i in $(seq 1 18); do
                       STATUS=$(aws ssm list-command-invocations \
                         --command-id "$COMMAND_ID" \
                         --details \
-                        --region $AWS_REGION \
-                        --query "CommandInvocations[0].Status" \
-                        --output text 2>/dev/null || echo "Pending")
+                        --region "$AWS_REGION" \
+                        --query 'CommandInvocations[0].Status' \
+                        --output text)
 
                       echo "Current SSM status: $STATUS"
 
@@ -117,7 +130,7 @@ pipeline {
                         aws ssm list-command-invocations \
                           --command-id "$COMMAND_ID" \
                           --details \
-                          --region $AWS_REGION
+                          --region "$AWS_REGION"
                         exit 1
                       fi
 
@@ -128,7 +141,7 @@ pipeline {
                     aws ssm list-command-invocations \
                       --command-id "$COMMAND_ID" \
                       --details \
-                      --region $AWS_REGION
+                      --region "$AWS_REGION"
                     exit 1
                 '''
             }
@@ -139,7 +152,7 @@ pipeline {
                 sh '''
                     echo "Waiting for ALB health check..."
                     sleep 20
-                    curl -f $ALB_HEALTHCHECK_URL
+                    curl -f "$ALB_HEALTHCHECK_URL"
                 '''
             }
         }
