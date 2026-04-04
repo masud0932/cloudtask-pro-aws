@@ -97,7 +97,9 @@ data "aws_iam_policy_document" "jenkins_custom" {
       "cloudfront:GetDistribution",
       "secretsmanager:GetSecretValue",
       "ssm:SendCommand",
-      "ssm:GetCommandInvocation"
+      "ssm:GetCommandInvocation",
+      "ssm:GetCommandInvocation",
+      "ssm:DescribeInstanceInformation"
     ]
     resources = ["*"]
   }
