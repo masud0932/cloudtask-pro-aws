@@ -1,81 +1,71 @@
 1. Project Title
-### CloudTask Pro - Production-Style 3-Tier Cloud Application with Terraform, Jenkins, Docker, Auto Scaling, ALB, CloudFront, and RDS
-
-CloudTask Pro is a **production-style AWS cloud project** that demonstrates how to design, provision, and deploy a modern web application using **Infrastructure as Code**, **CI/CD**, **containerized backend services**, and **high-availability cloud architecture**.
+### # CloudTask Pro — Production-Grade Task Management Platform on AWS
 
 ---
 
-## Project Overview
+## Project Description
 
-CloudTask Pro is a production-style task management platform deployed on AWS using modern DevOps and cloud engineering practices.
+CloudTask Pro is a full-stack task management platform designed and deployed using a production-style AWS architecture.
 
-The project was built to simulate how a real-world web application would be deployed in an enterprise environment using Infrastructure as Code, CI/CD, containerization, load balancing, auto scaling, secure secret management, and cloud-native services.
+The platform allows users to create and manage tasks, organize work by projects, and monitor task dashboard metrics through a modern web interface.
 
-CloudTask Pro allows users to:
+This project was built to demonstrate real-world cloud engineering, DevOps, and infrastructure automation skills using AWS, Terraform, Docker, Jenkins, and CI/CD best practices.
 
-view task dashboard metrics
-create and manage tasks
-organize work by projects
-interact with a backend API connected to PostgreSQL
+Key highlights of the project include:
 
-The application uses a React frontend, a Node.js backend, and a PostgreSQL database hosted on Amazon RDS.
-
-The platform includes:
-
-•	React + Vite frontend
-•	Node.js + Express backend API
-•	PostgreSQL database hosted on Amazon RDS
-•	Dockerized backend deployment
-•	S3 and CloudFront for frontend hosting
-•	Application Load Balancer and Auto Scaling Group for backend availability
-•	Jenkins-based CI/CD pipeline
-•	Terraform-based infrastructure provisioning
-•	AWS Secrets Manager for secure secret handling
-•	AWS Systems Manager for deployment automation
-This project reflects a real production workflow where infrastructure, application deployment, security, and automation are managed together in a scalable and reproducible way.
+- Production-style multi-tier AWS architecture
+- Infrastructure as Code using Terraform modules
+- CI/CD pipeline with Jenkins and GitHub webhooks
+- Dockerized backend deployment with Docker Hub
+- Frontend hosting with S3 and CloudFront
+- Backend deployment on EC2 Auto Scaling Group behind an Application Load Balancer
+- PostgreSQL database hosted on Amazon RDS
+- Secrets management using AWS Secrets Manager
+- Monitoring and logging using CloudWatch
+- Private/public subnet separation for improved security
+- Internal deployment automation using AWS Systems Manager (SSM)
 
 ---
 ## Project Structure
 The repository is organized to separate application code, infrastructure code, deployment scripts, and CI/CD configuration. This keeps the project easier to maintain and reflects a production-style layout.
 cloudtask-pro-aws/
 ├── app/
-│   ├── frontend/                 # React + Vite frontend application
-│   │   ├── public/               # Static public assets
-│   │   ├── src/                  # Frontend source code
-│   │   │   ├── components/       # Reusable UI components
-│   │   │   ├── assets/           # Images, icons, styles
-│   │   │   └── App.jsx           # Main frontend entry component
-│   │   ├── .env.production       # Production frontend environment variables
+│   ├── frontend/                 
+│   │   ├── src/                  
+│   │   │   ├── components/       
+│   │   │   ├── styles.css          
+│   │   │   └── App.jsx          
+│   │   ├── .env                 
 │   │   ├── package.json
 │   │   ├── vite.config.js
 │   │   └── Dockerfile
 │   │
-│   └── backend/                  # Node.js + Express backend API
+│   └── backend/                  
 │       ├── src/
-│       │   ├── db/               # DB connection and initialization logic
+│       │   ├── db/               
 │       │   │   ├── pool.js
 │       │   │   └── init.js
-│       │   ├── routes/           # API route handlers
+│       │   ├── routes/           
 │       │   │   ├── health.js
 │       │   │   ├── tasks.js
 │       │   │   ├── projects.js
 │       │   │   ├── dashboard.js
 │       │   │   ├── auth.js
 │       │   │   └── errorHandler.js
-│       │   └── server.js         # Main backend entry point
+│       │   └── server.js         
 │       ├── package.json
 │       ├── Dockerfile
-│       └── .env                  # Local backend environment variables
+│       └── .env                  
 │
 ├── terraform/
 │   ├── environments/
-│   │   └── dev/                  # Environment-specific Terraform configuration
+│   │   └── dev/                  
 │   │       ├── main.tf
 │   │       ├── variables.tf
 │   │       ├── outputs.tf
 │   │       └── terraform.tfvars
 │   │
-│   └── modules/                  # Reusable Terraform modules
+│   └── modules/                  
 │       ├── vpc/
 │       ├── security-groups/
 │       ├── alb/
@@ -90,12 +80,12 @@ cloudtask-pro-aws/
 │       └── jenkins/
 │
 ├── scripts/
-│   ├── deploy-backend.sh         # Backend deployment script executed through SSM
-│   ├── user-data-app.sh          # EC2 bootstrap script for backend/app instances
-│   └── user-data-jenkins.sh      # EC2 bootstrap script for Jenkins server
+│   ├── deploy-backend.sh         
+│   ├── user-data-app.sh          
+│   └── user-data-jenkins.sh      
 │
-├── Jenkinsfile                   # Jenkins CI/CD pipeline definition
-├── README.md                     # Project documentation
+├── Jenkinsfile                   
+├── README.md                     
 └── .gitignore
 
 ----
@@ -461,25 +451,25 @@ cloudtask-pro-aws/
 
 ## Local development
 
-### Backend
+## Prerequisites
+
+Make sure the following tools are installed before running the project locally:
+
+- Docker
+- Node.js
+- npm
+- Git
+
+Recommended versions:
 
 ```bash
-cd app/backend
-cp .env.example .env
-npm install
-npm run dev
+Docker >= 24
+Node.js >= 22
+npm >= 10
+Git >= 2
 ```
 
-### Frontend
-
-```bash
-cd app/frontend
-cp .env.example .env
-npm install
-npm run dev
-```
-
-### Local PostgreSQL with Docker
+### Database - Local PostgreSQL with Docker
 
 ```bash
 docker run --name cloudtask-postgres \
@@ -490,7 +480,32 @@ docker run --name cloudtask-postgres \
   -d postgres:16
 ```
 
----
+### Backend
+
+```bash
+cd app/backend
+npm install
+npm run dev
+```
+
+Backend runs at: http://localhost:3000
+```
+
+### Frontend
+
+```bash
+cd app/frontend
+npm install
+npm run dev
+```
+
+Frontend runs at: http://localhost:5173
+```
+
+## Note:
+1. PostgreSQL container must be running before backend starts
+2. Frontend .env must have: VITE_API_BASE_URL=http://localhost:3000
+
 
 ## Terraform usage
 
