@@ -74,8 +74,8 @@ CloudTask Pro follows a production-style three-tier AWS architecture.
 -   Clone the project repository.
 -   Move into the project directory.
 ```bash
-git clone https://github.com/masud0932/cloudtask-pro-aws.git
-cd cloudtask-pro-aws
+git clone https://github.com/masud0932/DevOps-cloudtask-pro.git
+cd DevOps-cloudtask-pro
 ```
 ### Step 2: Install Required Tools
 Install the following tools before running the project:
