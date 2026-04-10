@@ -1,14 +1,6 @@
-1. Project Title
-### # CloudTask Pro — Production-Grade Task Management Platform on AWS
-
----
-
-## Project Description
-
+CloudTask Pro — Production-Grade Task Management Platform on AWS
 CloudTask Pro is a full-stack task management platform designed and deployed using a production-style AWS architecture.
-
 The platform allows users to create and manage tasks, organize work by projects, and monitor task dashboard metrics through a modern web interface.
-
 This project was built to demonstrate real-world cloud engineering, DevOps, and infrastructure automation skills using AWS, Terraform, Docker, Jenkins, and CI/CD best practices.
 
 Key highlights of the project include:
@@ -25,810 +17,416 @@ Key highlights of the project include:
 - Private/public subnet separation for improved security
 - Internal deployment automation using AWS Systems Manager (SSM)
 
----
-## Project Structure
-The repository is organized to separate application code, infrastructure code, deployment scripts, and CI/CD configuration. This keeps the project easier to maintain and reflects a production-style layout.
-cloudtask-pro-aws/
-├── app/
-│   ├── frontend/                 
-│   │   ├── src/                  
-│   │   │   ├── components/       
-│   │   │   ├── styles.css          
-│   │   │   └── App.jsx          
-│   │   ├── .env                 
-│   │   ├── package.json
-│   │   ├── vite.config.js
-│   │   └── Dockerfile
-│   │
-│   └── backend/                  
-│       ├── src/
-│       │   ├── db/               
-│       │   │   ├── pool.js
-│       │   │   └── init.js
-│       │   ├── routes/           
-│       │   │   ├── health.js
-│       │   │   ├── tasks.js
-│       │   │   ├── projects.js
-│       │   │   ├── dashboard.js
-│       │   │   ├── auth.js
-│       │   │   └── errorHandler.js
-│       │   └── server.js         
-│       ├── package.json
-│       ├── Dockerfile
-│       └── .env                  
-│
-├── terraform/
-│   ├── environments/
-│   │   └── dev/                  
-│   │       ├── main.tf
-│   │       ├── variables.tf
-│   │       ├── outputs.tf
-│   │       └── terraform.tfvars
-│   │
-│   └── modules/                  
-│       ├── vpc/
-│       ├── security-groups/
-│       ├── alb/
-│       ├── ec2/
-│       ├── asg/
-│       ├── rds/
-│       ├── s3/
-│       ├── cloudfront/
-│       ├── iam/
-│       ├── secrets/
-│       ├── cloudwatch/
-│       └── jenkins/
-│
-├── scripts/
-│   ├── deploy-backend.sh         
-│   ├── user-data-app.sh          
-│   └── user-data-jenkins.sh      
-│
-├── Jenkinsfile                   
-├── README.md                     
-└── .gitignore
 
-----
-## Infrastructure Overview
-The infrastructure is designed to simulate a production-style AWS environment using Terraform, Docker, Jenkins, and multiple AWS services.
-The application follows a multi-tier architecture where frontend, backend, database, CI/CD, and networking components are separated into dedicated layers.
-High-Level Flow
-1.	Users access the frontend through CloudFront
-2.	CloudFront serves static frontend files stored in S3
-3.	Frontend API requests are sent to the Application Load Balancer
-4.	The ALB forwards traffic to backend EC2 instances running inside an Auto Scaling Group
-5.	Backend containers connect to PostgreSQL running on Amazon RDS
-6.	Secrets such as database credentials and JWT keys are retrieved from AWS Secrets Manager
-7.	Jenkins manages automated deployments using AWS Systems Manager (SSM)
-
-Networking Layer
-The project uses a dedicated VPC with multiple subnets across two Availability Zones for better availability and fault tolerance.
-The networking design includes:
-•	2 public subnets
-•	2 private subnets
+Tech Stack
+Frontend
+•	React
+•	Vite
+•	JavaScript
+•	CSS
+Backend
+•	Node.js
+•	Express.js
+•	PostgreSQL
+•	Docker
+Infrastructure
+•	Terraform
+•	IAM Roles and Policies
+•	Amazon VPC
+•	Public and Private Subnets
 •	Internet Gateway
 •	NAT Gateway
 •	Route Tables
 •	Security Groups
-Public subnets are used for:
 •	Application Load Balancer
-•	Jenkins server
-•	NAT Gateway
-Private subnets are used for:
-•	Backend application EC2 instances
-•	RDS PostgreSQL database
-This setup ensures that backend instances and the database are not directly exposed to the internet.
-
-Frontend Layer
-The frontend is built using React and Vite.
-The production frontend files are stored in an S3 bucket and distributed globally through CloudFront.
-Frontend requests follow this path:
-User → CloudFront → S3 Bucket
-Benefits of this approach include:
-•	low-cost static hosting
-•	faster global content delivery
-•	caching through CloudFront
-•	separation of frontend and backend layers
-
-Backend Layer
-The backend is built with Node.js and Express and runs inside Docker containers on EC2 instances.
-Backend instances are part of an Auto Scaling Group so that failed instances can be replaced automatically and additional instances can be added when traffic increases.
-Traffic flow for backend requests:
-User → ALB → EC2 Auto Scaling Group → Docker Container
-The backend instances are deployed inside private subnets and only receive traffic through the Application Load Balancer.
-
-Database Layer
-The application uses PostgreSQL hosted on Amazon RDS.
-The database is deployed inside private subnets and is not publicly accessible.
-Database access is restricted using Security Groups so that only backend EC2 instances can connect to it.
-Example database connection flow:
-Backend Container → RDS PostgreSQL
-
-Security Layer
-Several AWS services are used to improve security:
-•	IAM roles for EC2, Jenkins, and deployment permissions
-•	Security Groups to restrict traffic between components
-•	AWS Secrets Manager for storing database credentials and JWT secrets
-•	Private subnets for backend and database resources
-•	SSM for secure remote command execution without opening SSH access
-•	Encrypted EBS volumes for EC2 instances
-•	Encrypted RDS storage
-Secrets are not hardcoded in the application. Instead, the backend retrieves sensitive values dynamically from AWS Secrets Manager during deployment.
-
-CI/CD Layer
-A dedicated Jenkins server is used for CI/CD.
-Jenkins is hosted on EC2 and runs inside Docker.
-The CI/CD pipeline performs:
-•	frontend build and deployment to S3
-•	backend Docker image build
-•	Docker Hub push
-•	SSM-based backend deployment
-•	health check validation
-Deployment flow:
-GitHub → Jenkins → Docker Hub → SSM → EC2 Backend
-
-Infrastructure as Code
-All AWS resources are provisioned using Terraform.
-The Terraform code is organized into reusable modules such as:
-•	VPC
-•	Security Groups
-•	ALB
-•	EC2
 •	Auto Scaling Group
-•	RDS
-•	S3
-•	CloudFront
-•	IAM
-•	Secrets Manager
+•	Amazon EC2
+•	Amazon RDS PostgreSQL
+•	Amazon S3
+•	Amazon CloudFront
+•	AWS Secrets Manager
+•	AWS Systems Manager (SSM)
+•	Amazon CloudWatch
+•	Amazon SNS
+ 
+CI/CD
 •	Jenkins
-This makes the infrastructure reproducible, easier to maintain, and easier to extend in the future.
-________________________________________
-Availability and Fault Tolerance
-The project includes several production-style availability features:
-•	Multi-AZ subnet design
-•	Auto Scaling Group for backend instances
-•	Load balancing with ALB
-•	Health checks for backend containers
-•	CloudFront caching for frontend content
-•	Automatic EC2 replacement on failure
-These features improve system reliability and reduce downtime.
------------
-Monitoring and Alerting
-
-Basic monitoring is implemented using Application Load Balancer health checks, Docker logs, backend logs, and Jenkins deployment logs.
-
-The backend exposes a health endpoint:
-
-/health
-
-This endpoint is used by the Application Load Balancer to determine whether backend instances are healthy.
-
-Deployment logs are stored on EC2 instances, for example:
-
-/var/log/deploy-backend.log
-/var/log/user-data.log
-
-Docker container logs are also useful during troubleshooting:
-
-docker logs cloudtask-pro
-
----
-
-## Tech Stack
-
-### Frontend
-
-* React
-* Vite
-* JavaScript
-* Axios
-* CSS
-
-### Backend
-
-* Node.js
-* Express.js
-* PostgreSQL
-* pg library
-* dotenv
-
-### Infrastructure
-
-* Amazon VPC
-* Public and Private Subnets
-* Internet Gateway
-* NAT Gateway
-* Route Tables
-* Security Groups
-* Application Load Balancer
-* Auto Scaling Group
-* Amazon EC2
-* Amazon RDS PostgreSQL
-* Amazon S3
-* Amazon CloudFront
-* AWS Secrets Manager
-* AWS Systems Manager
-* Amazon CloudWatch
-* IAM Roles and Policies
-
-### DevOps & CI/CD
-
-* Jenkins
-* GitHub Webhooks
-* Docker
-* Docker Hub
-* Terraform
-* Bash Scripting
-
-### Monitoring & Logging
-
-* Amazon CloudWatch Metrics
-* Amazon CloudWatch Logs
-* Application Health Checks
-* ALB Target Group Health Checks
-
-### Security
-
-* IAM Least Privilege Access
-* Secrets Management with AWS Secrets Manager
-* Private Subnet for Backend and Database
-* Security Group Based Traffic Control
-* Encrypted RDS Storage
-* HTTPS Support through CloudFront
-
-
----
-
-## Terraform module structure
-
-This project uses a **modular Terraform design** for maintainability and reusability.
-
-### Modules
-
-* `vpc` – networking foundation
-* `security` – security groups
-* `alb` – application load balancer and target group
-* `asg` – backend compute layer
-* `rds` – PostgreSQL database
-* `s3` – frontend and artifact buckets
-* `cloudfront` – frontend CDN distribution
-* `iam` – roles and instance profiles
-* `secrets` – application secrets
-* `cloudwatch` – alarms and logs
-* `sns` – notifications
-* `jenkins` – Jenkins server provisioning
-
-### Environments
-
-* `terraform/environments/dev`
-* `terraform/environments/prod`
-
-This makes the repository look closer to how real cloud teams organize Terraform code.
-
-```
-## CI/CD Pipeline
-The project uses a fully automated CI/CD pipeline built with Jenkins, GitHub, Docker, and AWS services.
-Whenever new code is pushed to the GitHub repository, a GitHub webhook automatically triggers Jenkins to start the deployment pipeline.
-Pipeline Flow
-1.	Developer pushes code to the GitHub repository
-2.	GitHub webhook automatically triggers Jenkins
-3.	Jenkins pulls the latest changes
-4.	Frontend is built using React/Vite
-5.	Frontend build artifacts are uploaded to S3
-6.	Backend Docker image is built
-7.	Backend Docker image is pushed to Docker Hub
-8.	Jenkins identifies the running backend EC2 instance
-9.	Jenkins uploads the latest deployment script
-10.	Jenkins uses AWS Systems Manager (SSM) to deploy the new backend version
-11.	Application Load Balancer health checks verify successful deployment
-
-
-________________________________________
-Pipeline Stages
-1. GitHub Webhook Trigger
-Whenever code is pushed to the repository, GitHub automatically sends a webhook request to Jenkins.
-This removes the need to manually start builds from the Jenkins dashboard.
-
-2. Checkout Source Code
-Jenkins clones the latest version of the repository from GitHub.
-git clone <git repo>
-
-3. Frontend Build
-The frontend is built using npm and Vite.
-cd app/frontend
-npm ci
-npm run build
-This generates the production-ready dist/ folder.
-
-4. Frontend Deployment to S3
-The generated frontend files are uploaded to the S3 bucket.
-aws s3 sync dist/ s3://cloudtask-pro-dev-frontend-bucket --delete --region eu-central-1
-The --delete flag ensures old files are removed from S3 so that outdated frontend assets are not served.
-
-5. Backend Docker Image Build
-The backend application is packaged into a Docker image.
-cd app/backend
-docker build -t cloudtask-pro-backend .
-
-6. Docker Image Push to Docker Hub
-After building the backend image, Jenkins tags and pushes it to Docker Hub.
-docker tag cloudtask-pro-backend masudrana09/cloudtask-pro:latest
-docker push masudrana09/cloudtask-pro:latest
-
-7. Discover Running Backend EC2 Instance
-Jenkins dynamically finds the running backend EC2 instance in the Auto Scaling Group.
-aws ec2 describe-instances \
-  --filters "Name=tag:Name,Values=cloudtask-pro-dev-app" \
-            "Name=instance-state-name,Values=running" \
-  --region eu-central-1
-This avoids hardcoding EC2 instance IDs and supports dynamic infrastructure changes.
-
-8. Upload Latest Deployment Script
-To avoid using outdated deployment scripts already stored on EC2, Jenkins uploads the latest version during every deployment.
-Example actions include:
-scp scripts/deploy-backend.sh ec2-user@APP_SERVER_IP:/home/ec2-user/deploy-backend.sh
-chmod +x /home/ec2-user/deploy-backend.sh
-This ensures the latest deployment logic is always used.
-
-9. Backend Deployment Using SSM
-Jenkins uses AWS Systems Manager Run Command to deploy the latest backend container without requiring direct SSH access.
-Example deployment actions include:
-docker pull masudrana09/cloudtask-pro:latest
-docker stop cloudtask-pro || true
-docker rm cloudtask-pro || true
-docker run -d \
-  --name cloudtask-pro \
-  -p 3000:3000 \
-  --restart unless-stopped \
-  -e NODE_ENV=production \
-  -e RUN_DB_INIT=true \
-  -e APP_SECRET_ARN=$APP_SECRET_ARN \
-  masudrana09/cloudtask-pro:latest
-This ensures the backend container is recreated with the latest image and environment variables.
-
-10. Health Check Validation
-After deployment, Jenkins waits for the backend application to become healthy.
-curl http://<app-ec2-ip>:3000/health
-Expected response:
-{
-  "status": "ok",
-  "service": "cloudtask-pro-backend",
-  "database": "connected"
-}
-The Application Load Balancer also performs periodic health checks against:
-/health
-
----
-
-## Security practices implemented
-
-This project includes multiple production-oriented security considerations:
-
-* backend EC2 instances are deployed in **private subnets**
-* database is deployed in **private DB subnets**
-* backend traffic is allowed only from the **ALB security group**
-* database traffic is allowed only from the **app security group**
-* secrets are stored in **AWS Secrets Manager**
-* operational access is designed around **SSM**, reducing the need for direct server access
-* IAM roles are used for controlled AWS access
-* infrastructure is defined as code to improve consistency and auditability
-
----
-
-## Monitoring and observability
-
-The project includes:
-
-* CloudWatch log groups
-* ALB-related monitoring
-* unhealthy target monitoring
-* RDS monitoring
-* SNS notifications for alarms
-
-This helps demonstrate operational awareness, not just deployment ability.
-
----
-
-## Repository structure
-
-```text
-cloudtask-pro-aws/
-├── terraform/
-│   ├── bootstrap/
-│   ├── modules/
-│   └── environments/
-├── app/
-│   ├── backend/
-│   └── frontend/
-├── jenkins/
-├── scripts/
-├── diagrams/
-├── docs/
-└── README.md
-```
-
----
-
-## Local development
-
-## Prerequisites
-
-Make sure the following tools are installed before running the project locally:
-
-- Docker
-- Node.js
-- npm
-- Git
-
-Recommended versions:
-
-```bash
-Docker >= 24
-Node.js >= 22
-npm >= 10
-Git >= 2
-```
-
-### Database - Local PostgreSQL with Docker
-
-```bash
+•	Docker Hub
+•	GitHub Webhooks
+
+Phase 1: Initial Setup and Local Development
+Step 1: Clone the Repository
+•	Clone the project repository.
+•	Move into the project directory.
+git clone https://github.com/masud0932/cloudtask-pro-aws.git
+cd cloudtask-pro-aws
+Step 2: Install Required Tools
+•	Install the following tools before running the project:
+o	Git
+o	Docker
+o	Node.js
+o	npm
+o	Terraform
+o	AWS CLI
+Step 3: Start Local PostgreSQL with Docker
 docker run --name cloudtask-postgres \
   -e POSTGRES_DB=cloudtask \
   -e POSTGRES_USER=postgres \
   -e POSTGRES_PASSWORD=postgres \
   -p 5432:5432 \
   -d postgres:16
-```
-
-### Backend
-
-```bash
+Step 4: Run Backend Locally
 cd app/backend
 npm install
 npm run dev
-```
-
-Backend runs at: http://localhost:3000
-```
-
-### Frontend
-
-```bash
+•	Backend runs on: http://localhost:3000
+Step 5: Run Frontend Locally
 cd app/frontend
 npm install
 npm run dev
-```
+•	Frontend runs on: http://localhost:5173
 
-Frontend runs at: http://localhost:5173
-```
-
-## Note:
+Note:
 1. PostgreSQL container must be running before backend starts
 2. Frontend .env must have: VITE_API_BASE_URL=http://localhost:3000
 
+________________________________________
+Phase 2: Optional Containerization with Docker
+Step 1: Build Backend Docker Image
+cd app/backend
+docker build -t cloudtask-backend .
+Step 2: Run Backend Container
+docker run -d \
+  --name cloudtask-backend \
+  -p 3000:3000 \
+  --env-file .env \
+  cloudtask-backend
+•	Backend runs on: http://localhost:3000
 
-## Terraform usage
+Step 3: Build Frontend Docker Image
+cd app/frontend
+docker build -t cloudtask-frontend .
+Step 4: Run Frontend Container
+docker run -d \
+  --name cloudtask-frontend \
+  -p 80:80 \
+  cloudtask-frontend
+•	Frontend runs on: http://localhost:80
 
-### Go to the environment folder
-
-```bash
+________________________________________
+Phase 3: AWS Infrastructure Provisioning with Terraform
+Step 1: Configure AWS Access for Terraform
+•	Create a dedicated IAM user for Terraform deployment.
+•	Attach required AWS permissions for services:
+•	EC2
+•	VPC
+•	IAM
+•	RDS
+•	S3
+•	CloudFront
+•	Secrets Manager
+•	Auto Scaling
+•	CloudWatch
+•	Generate Access Key ID and Secret Access Key.
+Step 2: Configure AWS CLI
+aws configure
+Provide:
+•	AWS Access Key ID
+•	AWS Secret Access Key
+•	Default region: eu-central-1
+•	Output format: json
+Step 3: Initialize Terraform
 cd terraform/environments/dev
-```
-
-### Initialize Terraform
-
-```bash
 terraform init
-```
-
-### Validate configuration
-
-```bash
+Step 4: Validate and Format Terraform Files
+terraform fmt -recursive
 terraform validate
-```
-
-### Preview changes
-
-```bash
+Step 5: Review Infrastructure Changes
 terraform plan
-```
+Step 6: Deploy Infrastructure
+terraform apply -auto-approve
+Step 7: Verify Created Resources
+•	VPC
+•	Public and Private Subnets
+•	Internet Gateway
+•	NAT Gateway
+•	Route Tables
+•	Security Groups
+•	AWS Systems Manager (SSM)
+•	EC2 Instances
+•	Application Load Balancer
+•	Auto Scaling Group
+•	RDS PostgreSQL
+•	S3 Bucket
+•	CloudFront Distribution
+•	Secrets Manager
+•	CloudWatch Logs and Alarms
+________________________________________
+Phase 4: Jenkins Server Setup
+Step 1: Launch Jenkins EC2 Instance
+•	Provision an Amazon Linux EC2 instance for Jenkins.
+•	Attach the required IAM role, security group, and EC2 key pair for SSH access.
+•	Ensure port 8080 is open in the Jenkins server security group for web access.
 
-### Apply infrastructure
+Step 2: Bootstrap Jenkins Server
+•	Install Git, Docker, and SSM Agent.
+•	Enable Docker and SSM services.
+•	Add ec2-user to the Docker group.
+yum update -y
+yum install -y docker git amazon-ssm-agent
+systemctl enable docker
+systemctl start docker
+systemctl enable amazon-ssm-agent
+systemctl start amazon-ssm-agent
+usermod -aG docker ec2-user
+Step 3: Build Custom Jenkins Docker Image
+FROM jenkins/jenkins:lts
+USER root
+RUN yum update && \
+    yum install -y docker.io git curl && \
+    rm -rf /var/lib/yum/lists/*
+USER jenkins
+Step 4: Run Jenkins Container with Docker Socket Mount
+docker build -t my-jenkins-docker .
 
-```bash
-terraform apply
-```
+docker run -d \
+  --name jenkins \
+  --restart unless-stopped \
+  --user root \
+  -p 8080:8080 \
+  -p 50000:50000 \
+  -v /var/jenkins_home:/var/jenkins_home \
+  -v /var/run/docker.sock:/var/run/docker.sock \
+  my-jenkins-docker
+Step 5: Configure Jenkins
+•	Jenkins runs on: http://<jenkins-ec2-public-ip>:8080
+•	Install suggested plugins.
+•	Install Blue Ocean, GitHub, Git Push plugins.
+•	Add GitHub webhook.
+•	Configure Docker Hub credentials.
+•	Configure SSH or SSM deployment access.
+•	Create Jenkins pipeline job.
+________________________________________
+Phase 5: CI/CD Pipeline Execution
+Step 1: Trigger Pipeline
+•	Push code changes to GitHub.
+•	GitHub webhook triggers Jenkins automatically.
+Step 2: Pipeline Stages
+1.	Clone Source Code
+2.	Build Frontend
+3.	DeployFrontend to S3
+4.	Invalidate CloudFront Cache
+5.	Build Backend Docker Image
+6.	Push Docker Image to Docker Hub
+7.	Trigger Deployment on App EC2 via SSM
+8.	Run Health Check
+9.	Verify Deployment Success
+Step 3: Backend Deployment Script
+./scripts/deploy-backend.sh <app_secret_arn> <aws_region> <app_port>
+Step 4: Deployment Process
+•	Fetch application secret from AWS Secrets Manager.
+•	Fetch RDS credentials from AWS Secrets Manager.
+•	Pull latest Docker image.
+•	Stop and remove old container.
+•	Start new container with environment variables.
+•	Run /health endpoint check.
+•	Log deployment output to /var/log/deploy-backend.log.
+Step 5: Monitor Build Logs
+docker logs jenkins
+docker logs cloudtask-pro
+sudo tail -f /var/log/deploy-backend.log
+sudo tail -f /var/log/user-data.log
+________________________________________
+Phase 6: Application Deployment and Verification
+Step 1: Bootstrap Application EC2 Instance
+•	Install Docker, AWS CLI, jq, and SSM Agent.
+•	Enable Docker and SSM services.
+•	Create deployment directory.
+yum update -y
+yum install -y docker aws-cli jq amazon-ssm-agent
+systemctl enable docker
+systemctl start docker
+systemctl enable amazon-ssm-agent
+systemctl start amazon-ssm-agent
+Step 2: Initial Application Deployment
+•	Fetch app secrets from AWS Secrets Manager.
+•	Fetch RDS credentials from managed DB secret.
+•	Pull Docker image from Docker Hub.
+•	Start backend container.
+docker run -d \
+  --name cloudtask-pro \
+  -p 3000:3000 \
+  --restart unless-stopped \
+  -e PORT=3000 \
+  -e NODE_ENV=production \
+  -e RUN_DB_INIT=true \
+  -e DB_HOST=<db_host> \
+  -e DB_PORT=<db_port> \
+  -e DB_NAME=<db_name> \
+  -e DB_USER=<db_user> \
+  -e DB_PASSWORD=<db_password> \
+  masudrana09/cloudtask-pro:latest
+Step 3: Verify Application Health
+APP_PORT=3000
+curl http://localhost:${APP_PORT}/health
+Step 4: Verify Frontend and Backend Connectivity
+•	Confirm frontend can communicate with backend API.
+•	Verify ALB target group shows healthy targets.
+•	Verify tasks and projects load correctly.
+Step 5: Validate Security
+•	Frontend served through HTTPS.
+•	Backend served internally through HTTP.
+•	Database remains in private subnet.
+•	Secrets stored in AWS Secrets Manager.
+Restricted security group access between ALB, app server, and RDS.________________________________________
+Phase 7: Monitoring and Troubleshooting
+Step 1: Monitor Infrastructure
+•	Use CloudWatch for logs and alarms.
+•	Monitor EC2 CPU, memory, and disk usage.
+•	Monitor RDS database metrics.
+•	Monitor ALB target health.
+•	Monitor Auto Scaling activity.
+Step 2: Configure Notifications
+•	Configure CloudWatch alarms.
+•	Send notifications using SNS.
+•	Notify when:
+o	EC2 CPU is too high
+o	ALB target becomes unhealthy
+o	RDS storage is low
+o	Deployment fails
+o	Auto Scaling launches or terminates instances
+Step 3: Common Troubleshooting Areas
+•	Frontend cannot connect to backend.
+•	Backend cannot connect to database.
+•	Jenkins webhook not triggering.
+•	Docker container crashes.
+•	Security group misconfiguration.
+•	ALB target unhealthy.
+•	Incorrect environment variables.
+•	CloudFront returns 403 error.
+•	SSM deployment command fails.
+________________________________________
+Phase 8: Security
+Step 1: IAM and Access Control
+•	Use IAM roles instead of static credentials.
+•	Apply least-privilege permissions.
+•	Restrict EC2, Jenkins, and SSM permissions.
+Step 2: Network Security
+•	Use private subnets for backend and database.
+•	Restrict security groups between ALB, EC2, and RDS.
+•	Allow only required ports.
+Step 3: Secret Management
+•	Store database credentials in AWS Secrets Manager.
+•	Avoid storing secrets inside code or GitHub.
+•	Retrieve secrets dynamically during deployment.
+Step 4: Container Security
+•	Use images built by the project pipeline and stored in Docker Hub 
+•	Avoid hardcoded credentials inside container images 
+•	Use environment variables and Secrets Manager for runtime secrets
+Step 5: Logging and Auditing
+•	Use CloudWatch logs.
+•	Use SSM command history.
+Track Jenkins deployment logs.
 
----
 
-## Project highlights for recruiters
-
-This project demonstrates practical skills in:
-
-* AWS architecture design
-* Terraform-based infrastructure provisioning
-* Jenkins-driven CI/CD
-* Docker-based backend delivery
-* scalable and secure application deployment
-* cloud networking design
-* secrets management
-* monitoring and alerting
-* production-style system thinking
-
----
-
-## Resume-ready summary
-
-You can describe this project on your CV like this:
-
-**CloudTask Pro on AWS** — Designed and implemented a production-style 3-tier AWS application using Terraform, Jenkins, Docker, EC2 Auto Scaling, Application Load Balancer, CloudFront, S3, and RDS PostgreSQL, with secure networking, secrets management, monitoring, and automated deployment workflows.
-
-Or in shorter form:
-
-Designed a production-style AWS cloud application with Terraform, Jenkins CI/CD, Dockerized backend services, Auto Scaling, ALB, S3/CloudFront frontend delivery, RDS PostgreSQL, Secrets Manager, and CloudWatch monitoring.
-
----
-
-## Business value of this project
-
-This project reflects how cloud infrastructure can be built to support:
-
-* scalability
-* repeatable deployment
-* lower manual operations effort
-* improved security posture
-* better maintainability
-* faster software delivery
-
-It is intended as a portfolio project that demonstrates readiness for roles in:
-
-* DevOps Engineering
-* Cloud Engineering
-* Platform Engineering
-* DevSecOps
-* Site Reliability Engineering
-
----
-
-## Current status
-
-* Backend application developed and tested locally
-* Frontend application developed and tested locally
-* Terraform project structure created
-* Modular infrastructure design in progress
-* Jenkins-based CI/CD design prepared
-* AWS deployment workflow being integrated
-
----
-
-## Planned improvements
-
-Future enhancements may include:
-
-* Amazon ECR for backend image storage
-* blue/green deployment strategy
-* AWS WAF integration
-* Redis caching layer
-* enhanced monitoring dashboards
-* production-grade backup and recovery policies
-* container orchestration migration path (ECS or EKS)
-
----
-
-## Screenshots
-
-Add screenshots here after deployment:
-
-```md
-### Application UI
-![Frontend Screenshot](docs/screenshots/frontend.png)
-
-### Jenkins Pipeline
-![Jenkins Screenshot](docs/screenshots/jenkins.png)
-
-### AWS Architecture
-![AWS Screenshot](docs/screenshots/aws.png)
-```
-
----
-
-## Key learning outcomes
-
-This project helped strengthen hands-on skills in:
-
-* Terraform module design
-* AWS networking architecture
-* secure infrastructure patterns
-* CI/CD pipeline design
-* Docker-based application deployment
-* cloud service integration
-* cloud operations mindset
-
----
-
-## Author
-
-**Md Masud Rana**
-DevOps / Cloud / DevSecOps focused engineer with hands-on interest in production-style AWS architecture, CI/CD automation, and secure cloud delivery.
-
----
-
-## License
-
-This project is for portfolio, learning, and demonstration purposes.
-
-````
-## Challenges Faced and Solutions Implemented
-1. Jenkins Container Missing Node.js and npm
-Challenge:
-The Jenkins server was running inside Docker, but the base Jenkins image did not include Node.js or npm. As a result, frontend build stages failed with:
-npm: not found
-Solution:
-A custom Jenkins Docker image was created with Node.js and npm preinstalled. This allowed Jenkins to build the React/Vite frontend directly inside the Jenkins container.
-
-2. Frontend Build Artifacts Missing
-Challenge:
-The frontend deployment stage failed because the dist/ folder did not exist.
-Root Cause:
-The frontend build process had failed earlier due to missing npm.
-Solution:
-After fixing Node.js/npm inside Jenkins, the frontend stage was updated to use:
+Phase 9: Technical Challenges and Resolutions
+Step 1: Jenkins Container Missing Node.js and npm
+Challenge: The Jenkins server was running inside Docker, but the base Jenkins image did not include Node.js or npm.
+Solution: A custom Jenkins Docker image was created with Node.js and npm preinstalled.
+Step 2: Frontend Build Artifacts Missing
+Challenge: The frontend deployment failed because the dist/ folder did not exist.
+Solution: The frontend stage was updated to use:
 npm ci
 npm run build
-This ensured the dist/ folder was generated before uploading to S3.
-
-3. Missing IAM Permissions for Jenkins
-Challenge:
-Jenkins could not use AWS Systems Manager (SSM) commands to deploy the backend. Errors such as the following occurred:
-AccessDeniedException
+Step 3: Missing IAM Permissions for Jenkins
+Challenge: Jenkins could not use AWS SSM deployment commands.
+Solution: Additional IAM permissions were added: 
+•  ssm:SendCommand 
+•  ssm:ListCommandInvocations 
+•  ssm:DescribeInstanceInformation
+Step 4: Backend Deployment Script Timeout
+Challenge: Backend deployments frequently timed out.
 Solution:
-Additional IAM permissions were attached to the Jenkins EC2 role, including:
-•	ssm:SendCommand
-•	ssm:ListCommandInvocations
-•	ssm:DescribeInstanceInformation
-This allowed Jenkins to send deployment commands and monitor execution status.
-
-4. Backend Deployment Script Timeout
-Challenge:
-Backend deployments frequently timed out because Jenkins could not properly determine whether the SSM command succeeded or failed.
-Solution:
-The deployment stage was improved by:
-•	adding proper SSM status polling
-•	increasing wait times
-•	printing detailed SSM output on failure
-This made backend deployment failures easier to diagnose.
-
-5. CloudFront Returning 403 Access Denied
-Challenge:
-The frontend initially failed to load because CloudFront returned a 403 AccessDenied error.
-Root Cause:
-CloudFront could not access the frontend content correctly in S3.
-Solution:
-The following changes were made:
-•	set CloudFront default root object to index.html
-•	fixed S3 bucket permissions
-•	configured the bucket for static website hosting
-
-6. Vite Environment Variable Not Loading
-Challenge:
-The frontend could not connect to the backend because the API base URL was undefined.
-Root Cause:
-The frontend used:
-import.meta.env.production.VITE_API_BASE_URL
-which is not valid in Vite.
-Solution:
-The code was updated to:
+•	Added SSM status polling 
+•	Increased wait times 
+•	Printed detailed SSM failure output
+Step 5: CloudFront Returning 403 Access Denied
+Challenge: CloudFront returned 403 AccessDenied.
+Solution: 
+•	Set default root object to index.html 
+•	Fixed S3 bucket permissions 
+•	Configured static website hosting
+Step 6: Vite Environment Variable Not Loading
+Challenge: The frontend API base URL was undefined.
+Solution: Updated:
 import.meta.env.VITE_API_BASE_URL
-This correctly loaded variables from .env.production.
-
-7. Backend API Returning 500 Errors
-Challenge:
-Frontend API requests returned 500 Internal Server Error.
-Root Cause:
-The backend connected successfully to PostgreSQL, but database tables such as tasks and projects did not exist.
-Solution:
-The backend deployment was updated to set:
-RUN_DB_INIT=true
-This ensured that the database initialization logic ran automatically during startup and created required tables.
-
-8. Database Initialization Was Being Skipped
-Challenge:
-Although the backend contained SQL code to create tables, the logs showed:
-Skipping database initialization
-Root Cause:
-Database initialization only occurred when:
-RUN_DB_INIT === "true"
-Solution:
-The backend deployment script was updated to include:
+Step 7: Backend API Returning 500 Errors
+Challenge: API requests returned 500 Internal Server Error.
+Solution: Enabled automatic database initialization using:
 -e RUN_DB_INIT=true
-inside the Docker container startup command.
-
-9. Jenkins Was Using an Outdated Deployment Script
-Challenge:
-Even after updating deploy-backend.sh locally, the backend deployment continued using an older version.
-Root Cause:
-The app EC2 instance already contained an old copy of:
-/home/ec2-user/deploy-backend.sh
-and SSM always executed that existing file.
-Solution:
-The Jenkins pipeline was redesigned to upload the latest version of deploy-backend.sh to the app EC2 instance during every deployment before executing it.
-This removed configuration drift between:
-•	Git repository
-•	Jenkins workspace
-•	EC2 instance
-
-10. Wrong Secret Value Passed to Backend Deployment
-Challenge:
-The deployment script originally received an EC2 instance ARN instead of the application secret ARN.
-Solution:
-The Jenkins pipeline was corrected to pass the proper AWS Secrets Manager ARN for the application configuration secret.
-Ran the command in aws CLI:
+Step 8: Database Initialization Was Being Skipped
+Challenge: The backend logs showed:
+Skipping database initialization
+Solution: The deployment script was updated to include:
+-e RUN_DB_INIT=true
+Step 9: Jenkins Was Using an Outdated Deployment Script
+Challenge: Jenkins continued using an older deploy-backend.sh file.
+Solution: The Jenkins pipeline was redesigned to upload the latest deployment script during every deployment.
+Step 10: Wrong Secret Value Passed to Backend Deployment
+Challenge: The deployment script originally received an EC2 instance ARN instead of the application secret ARN.
+Solution: The Jenkins pipeline was updated to pass the correct AWS Secrets Manager ARN.
 aws secretsmanager list-secrets \
   --region eu-central-1 \
   --query 'SecretList[*].[Name,ARN]' \
   --output table
 
+Phase 10: Future Improvements
+Step 1: Add Route 53 Domain
+•	Configure custom domain.
+•	Add SSL certificate.
 
-## Future Improvements
-Although the current platform already provides a production-style AWS deployment with Terraform, Jenkins CI/CD, Docker, S3, CloudFront, RDS, ALB, Secrets Manager, and EC2 Auto Scaling, several future improvements can make the system even more scalable, secure, and production-ready.
-1. End-to-End HTTPS
-The frontend already uses CloudFront, but the backend can be further improved by adding:
-•	AWS Certificate Manager (ACM)
-•	HTTPS listener on the Application Load Balancer
-•	Automatic HTTP to HTTPS redirection
-•	Secure cookies and HSTS headers
-This would provide secure communication across the entire platform.
+Step 2: End-to-End HTTPS
+•	Add AWS Certificate Manager (ACM).
+•	Add HTTPS listener on ALB.
 
-2. Kubernetes-Based Deployment
-The current deployment uses Docker containers on EC2 instances.
-In the future, the platform could be migrated to:
-•	Amazon Elastic Kubernetes Service (EKS)
-•	Kubernetes
-This would provide:
-•	easier scaling
-•	rolling deployments
-•	self-healing containers
-•	better resource utilization
-•	improved container orchestration
+Step 3: Migrate to Kubernetes
+•	Use EKS for orchestration.
+•	Deploy with Helm charts.
+Step 4: Improve Monitoring
+•	Add Prometheus and Grafana.
+•	Add centralized logging.
+Step 5: Infrastructure Security Improvements
+•	Move all app instances to private subnets.
+•	Add AWS WAF.
+•	Add GuardDuty.
 
-3. Container Image Security Scanning
-Currently, Docker images are built and deployed automatically.
-Future enhancements could include:
-•	container vulnerability scanning
-•	image signing
-•	dependency scanning
-•	secret detection in source code
-•	Software Bill of Materials (SBOM) generation
-Possible tools include:
-•	Trivy
-•	SonarQube
-•	OWASP Dependency-Check
-
-4. Infrastructure Security Improvements
-The current setup already uses IAM roles, Security Groups, and Secrets Manager.
-Future security enhancements may include:
-•	private subnets for all application instances
-•	VPC endpoints for AWS services
-•	Web Application Firewall (WAF)
-•	intrusion detection with GuardDuty
-•	stricter IAM least-privilege policies
-•	AWS Config compliance checks
-Possible services include:
-•	AWS WAF
-•	Amazon GuardDuty
-•	AWS Config
-
-5. Event-Driven and Serverless Features
-Some background tasks can eventually be moved to serverless services such as:
-•	AWS Lambda
-•	Amazon SQS
-•	Amazon EventBridge
-This could improve scalability and reduce operational overhead for asynchronous processing tasks.
-
----
-Screenshots
-
-The following screenshots can be added to better demonstrate the architecture, deployment workflow, and application functionality
-
-------
+Phase 11: Screenshots
+### Terraform Apply Output
+![Terraform Apply](screenshots/terraform-apply.png)
+### IAM Dashboard
+![IAM Roles & Policies](screenshots/IAM-Dashboard.jpg)
+### Jenkins Pipeline Success
+![Jenkins Pipeline](screenshots/jenkins-pipeline.jpg)
+### EC2 Instances
+![EC2 Instances](screenshots/ec2-instances.jpg)
+### Frontend Dashboard
+![Frontend Dashboard](screenshots/frontend-dashboard.jpg)
+Phase 12: Cleanup and Destroy Infrastructure
+Step 1: Stop Running Containers
+docker stop jenkins
+docker stop cloudtask-pro
+docker rm -f jenkins
+docker rm -f cloudtask-pro
+Step 2: Remove Docker Images
+docker rmi my-jenkins-docker
+docker rmi masudrana09/cloudtask-pro:latest
+Step 3: Destroy Terraform Infrastructure
+cd terraform/environments/dev
+terraform destroy -auto-approve
+Step 4: Verify Cleanup
+•	Confirm EC2 instances are terminated.
+•	Confirm ALB is deleted.
+•	Confirm RDS is deleted.
+•	Confirm CloudFront distribution is deleted.
+•	Confirm S3 bucket is deleted.
 

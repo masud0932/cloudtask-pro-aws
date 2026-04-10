@@ -22,9 +22,9 @@ cd /opt/jenkins-docker
 cat > Dockerfile <<'EOF'
 FROM jenkins/jenkins:lts
 USER root
-RUN apt-get update && \
-    apt-get install -y docker.io git curl && \
-    rm -rf /var/lib/apt/lists/*
+RUN yum update && \
+    yum install -y docker.io git curl && \
+    rm -rf /var/lib/yum/lists/*
 USER jenkins
 EOF
 
