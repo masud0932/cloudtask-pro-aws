@@ -111,10 +111,21 @@ npm run dev
 ```
 - Frontend runs on: http://localhost:5173
 
-### Note:
-- PostgreSQL container must be running before backend starts
-- Frontend .env must have: VITE_API_BASE_URL=http://localhost:3000
+### Step 6: Configure Frontend Environment Variables
 
+Create a `.env` file inside `app/frontend`.
+
+```env
+VITE_API_BASE_URL=http://localhost:3000
+````
+
+For AWS deployment, update it to the backend ALB DNS name.
+
+```env
+VITE_API_BASE_URL=http://<your-alb-dns-name>
+```
+
+> Note: The `.env` file is excluded through `.gitignore`. Create a `.env.example` file to show the required environment variables.
 
 ## Phase 2: Optional Containerization with Docker
 ### Step 1: Build Backend Docker Image
@@ -494,8 +505,7 @@ aws secretsmanager list-secrets \
 
 
 ## Phase 11: Screenshots
-### Terraform Apply Output
-![Terraform Apply](screenshots/terraform-apply.png)
+
 ### IAM Dashboard
 ![IAM Roles & Policies](screenshots/IAM-Dashboard.jpg)
 ### Jenkins Pipeline Success
