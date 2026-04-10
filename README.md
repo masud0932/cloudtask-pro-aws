@@ -269,6 +269,9 @@ docker run -d \
 
 
 ## Phase 5: CI/CD Pipeline Execution
+
+![Pipeline Stages](screenshots/Pipeline flow.png)
+
 ### Step 1: Trigger Pipeline
 -   Push code changes to GitHub.
 -   GitHub webhook triggers Jenkins automatically.
