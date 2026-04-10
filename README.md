@@ -97,7 +97,7 @@ docker run --name cloudtask-postgres \
   ```
 ### Step 4: Run Backend Locally
 ```bash
-```bashcd app/backend
+cd app/backend
 npm install
 npm run dev
 ```
