@@ -148,18 +148,18 @@ docker run -d \
 
 ## Phase 3: AWS Infrastructure Provisioning with Terraform
 ### Step 1: Configure AWS Access for Terraform
--   Create a dedicated IAM user for Terraform deployment.
--   Attach required AWS permissions for services:
--   EC2
--   VPC
--   IAM
--   RDS
--   S3
--   CloudFront
--   Secrets Manager
--   Auto Scaling
--   CloudWatch
--   Generate Access Key ID and Secret Access Key.
+- Create a dedicated IAM user for Terraform deployment.
+- Attach required AWS permissions for services:
+  - EC2
+  - VPC
+  - IAM
+  - RDS
+  - S3
+  - CloudFront
+  - Secrets Manager
+  - Auto Scaling
+  - CloudWatch
+- Generate Access Key ID and Secret Access Key.
 ### Step 2: Configure AWS CLI
 ```bash
 aws configure
