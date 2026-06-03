@@ -24,13 +24,14 @@ CloudTask Pro follows a production-style three-tier AWS architecture designed fo
 ### System Architecture
 
 ```text
-Users
+**Users**
    ↓
 Amazon CloudFront
    ↓
 Amazon S3 (Frontend Hosting)
 
-Users
+
+**Users**
    ↓
 Application Load Balancer (ALB)
    ↓
@@ -124,70 +125,13 @@ This architecture provides a scalable, automated, and production-oriented AWS pl
 | Monitoring & Logging   | Amazon CloudWatch, Amazon SNS                                                     |
 | Version Control        | Git, GitHub                                                                       |
 
-
-## Project Structure
-
-```text
-cloudtask-pro/
-├── app/
-│   ├── frontend/
-│   │   ├── public/
-│   │   ├── src/
-│   │   ├── Dockerfile
-│   │   ├── nginx.conf
-│   │   ├── package.json
-│   │   └── vite.config.js
-│   │
-│   └── backend/
-│       ├── src/
-│       ├── Dockerfile
-│       ├── package.json
-│       └── .env.example
-│
-├── terraform/
-│   ├── modules/
-│   │   ├── alb/
-│   │   ├── asg/
-│   │   ├── cloudfront/
-│   │   ├── cloudwatch/
-│   │   ├── ec2/
-│   │   ├── iam/
-│   │   ├── rds/
-│   │   ├── route_tables/
-│   │   ├── s3/
-│   │   ├── secrets/
-│   │   ├── security_groups/
-│   │   ├── sns/
-│   │   ├── ssm/
-│   │   ├── subnets/
-│   │   └── vpc/
-│   │
-│   └── environments/
-│       └── dev/
-│           ├── main.tf
-│           ├── variables.tf
-│           ├── outputs.tf
-│           └── terraform.tfvars
-│
-├── scripts/
-│   ├── user-data-app.sh
-│   ├── user-data-jenkins.sh
-│   └── deploy-backend.sh
-│
-├── screenshots/
-│
-├── Jenkinsfile
-├── README.md
-└── .gitignore
-```
-
 ## Local Development and Container Testing
 
 ### Clone Repository
 
 ```bash
-git clone https://github.com/masud0932/DevOps-cloudtask-pro.git
-cd DevOps-cloudtask-pro
+git clone https://github.com/masud0932/cloudtask-pro-aws.git
+cd cloudtask-pro-aws
 ```
 
 ### Install Required Tools
@@ -205,7 +149,6 @@ Install the following tools before running the project:
 Run all services locally using Docker Compose:
 
 ```bash
-cd taskflow-microservices-app
 sudo docker compose up --build
 ```
 ### Access Services
@@ -215,11 +158,11 @@ sudo docker compose up --build
 
 ## Production Deployment on AWS
 
-### Phase 1: AWS Infrastructure Provisioning with Terraform
+## Phase 1: AWS Infrastructure Provisioning with Terraform
 
 The AWS infrastructure for CloudTask Pro is provisioned using Terraform with a modular Infrastructure as Code approach. Terraform is used to create the complete cloud environment, including networking, compute, load balancing, database, frontend hosting, secret management, monitoring, and deployment automation resources.
 
-#### Infrastructure Deployment Scope
+### Infrastructure Deployment Scope
 
 Terraform provisions the following AWS resources:
 
@@ -241,7 +184,7 @@ Terraform provisions the following AWS resources:
 * Amazon CloudWatch
 * Amazon SNS
 
-#### Key Infrastructure Features
+### Key Infrastructure Features
 
 - Modular Terraform architecture
 - Public and private subnet separation
@@ -251,7 +194,7 @@ Terraform provisions the following AWS resources:
 - Deployment automation with AWS Systems Manager
 - Centralized monitoring and alerting
 
-#### Terraform Workflow
+### Terraform Workflow
 The infrastructure follows a production-style AWS 3-tier architecture with isolated networking, scalable compute resources, managed database services, and automated deployment integration.
 
 ```text
@@ -272,7 +215,7 @@ S3 & CloudFront
 Secrets Manager, SSM, CloudWatch & SNS
 ```
 
-#### Deployment Steps
+### Deployment Steps
 
 ```bash
 cd terraform/environments/dev
@@ -280,23 +223,23 @@ terraform init
 terraform apply -auto-approve
 ```
 
-#### Outcome
+### Outcome
 
 A complete AWS 3-tier infrastructure is provisioned automatically using Terraform. The deployed environment provides secure networking, scalable backend compute, managed PostgreSQL storage, frontend hosting through S3 and CloudFront, centralized secret management, and operational monitoring through AWS-native services.
 
-### Phase 2: CI/CD Pipeline
+## Phase 2: CI/CD Pipeline
 
-#### Jenkins Server Setup
+### Jenkins Server Setup
 
 Jenkins was deployed on an Amazon Linux EC2 instance and configured as the CI/CD automation server for CloudTask Pro. The server automates frontend deployment, backend Docker image builds, and backend deployment through AWS Systems Manager (SSM).
 
-##### Access Jenkins UI
+#### Access Jenkins UI
 
 ```bash
 http://<jenkins-public-ip>:8080
 ```
 
-##### Required Jenkins Plugins
+#### Required Jenkins Plugins
 
 * Git
 * Pipeline
@@ -304,7 +247,7 @@ http://<jenkins-public-ip>:8080
 * Docker Pipeline
 * Credentials Binding
 
-##### Jenkins Credentials Configuration
+#### Jenkins Credentials Configuration
 
 The following credentials were configured in Jenkins:
 
@@ -312,13 +255,9 @@ The following credentials were configured in Jenkins:
 * GitHub access token
 * AWS deployment permissions
 
-#### Pipeline Workflow
+### Pipeline Workflow
 
-A Jenkins-based CI/CD pipeline was implemented to automate the build, deployment, and verification workflow for the CloudTask Pro platform. GitHub webhooks automatically trigger the pipeline whenever code changes are pushed to the repository.
-
-The pipeline handles frontend deployment to Amazon S3 and CloudFront, backend Docker image build and publishing, and automated backend deployment to EC2 instances through AWS Systems Manager (SSM).
-
-##### Pipeline Stages
+A Jenkins-based CI/CD pipeline was implemented to automate the build, deployment, and verification workflow for the CloudTask Pro platform. GitHub webhooks automatically trigger the pipeline whenever code changes are pushed to the repository. The pipeline handles frontend deployment to Amazon S3 and CloudFront, backend Docker image build and publishing, and automated backend deployment to EC2 instances through AWS Systems Manager (SSM).
 
 ![Pipeline Stages](screenshots/pipeline-flow.png)
 
@@ -331,27 +270,13 @@ The pipeline handles frontend deployment to Amazon S3 and CloudFront, backend Do
 7. The running backend container is replaced with the latest application version.
 8. Application health checks are executed to verify successful deployment.
 
-##### CI/CD Components
-
-* Jenkins server hosted on Amazon EC2
-* GitHub webhook integration
-* Docker-based backend image build
-* Docker Hub image publishing
-* Automated frontend deployment to Amazon S3
-* CloudFront cache invalidation
-* Backend deployment automation with AWS Systems Manager
-* Health check validation after deployment
-* Centralized deployment logging
-
-##### Outcome
+#### Outcome
 
 A fully automated CI/CD workflow was established for CloudTask Pro, enabling consistent application delivery, automated frontend and backend deployment, centralized deployment management, and production-style operational automation on AWS.
 
-#### Deployment Verification
+### Deployment Verification
 
 After completing the infrastructure provisioning and CI/CD deployment phases, the CloudTask Pro platform was validated to ensure that all application components, deployment workflows, networking configurations, and AWS services were operating correctly.
-
-##### Deployment Verification
 
 The following checks were performed after deployment:
 
@@ -365,7 +290,7 @@ The following checks were performed after deployment:
 * CloudWatch logs and alarms operational
 * Secrets retrieved successfully from AWS Secrets Manager
 
-##### Validation Commands
+#### Validation Commands
 
 ```bash
 # Verify backend health
@@ -382,7 +307,7 @@ docker logs cloudtask-pro
 sudo tail -f /var/log/deploy-backend.log
 ```
 
-##### Security Validation
+#### Security Validation
 
 * Frontend delivered through Amazon CloudFront
 * Backend accessible through the Application Load Balancer
@@ -391,15 +316,15 @@ sudo tail -f /var/log/deploy-backend.log
 * Restricted security group access between ALB, EC2, and RDS
 * Internal deployment automation implemented through AWS Systems Manager (SSM)
 
-##### Outcome
+#### Outcome
 
 The CloudTask Pro platform was successfully deployed and verified on AWS using a production-style 3-tier architecture with automated deployment workflows, scalable backend infrastructure, centralized secret management, and operational monitoring.
 
-### Phase 3: Monitoring and Troubleshooting
+## Phase 3: Monitoring 
 
 Amazon CloudWatch and Amazon SNS were used to monitor infrastructure health, deployment activity, application logs, and operational events across the CloudTask Pro platform.
 
-#### Monitoring Components
+### Monitoring Components
 
 * Amazon CloudWatch for logs, metrics, and alarms
 * Amazon SNS for notification delivery
@@ -409,17 +334,7 @@ Amazon CloudWatch and Amazon SNS were used to monitor infrastructure health, dep
 * Deployment log monitoring
 * Docker container log verification
 
-#### CloudWatch Access
-
-```text id="sn5q8e"
-AWS Console
-   ↓
-CloudWatch
-   ↓
-Logs, Metrics, Alarms
-```
-
-#### Validation Commands
+### Validation Commands
 
 ```bash id="njlwmn"
 docker ps
@@ -427,19 +342,7 @@ docker logs cloudtask-pro
 docker logs jenkins
 sudo tail -f /var/log/deploy-backend.log
 ```
-
-#### Common Troubleshooting Areas
-
-* Frontend and backend connectivity issues
-* Database connection failures
-* Jenkins webhook failures
-* Docker container startup issues
-* ALB health check failures
-* Environment variable misconfiguration
-* CloudFront access errors
-* AWS Systems Manager deployment failures
-
-#### Outcome
+### Outcome
 
 Monitoring and troubleshooting workflows provided centralized logging, infrastructure visibility, deployment validation, and operational monitoring across the CloudTask Pro platform.
 
@@ -458,18 +361,6 @@ Security best practices were implemented across the CloudTask Pro platform to im
 * Environment variable–based runtime configuration
 * Removal of hardcoded credentials from application code
 
-### Secret Management Flow
-
-```text id="8h2s5f"
-AWS Secrets Manager
-   ↓
-AWS Systems Manager (SSM)
-   ↓
-EC2 Application Servers
-   ↓
-Docker Backend Container
-```
-
 ### Security Validation
 
 * Database credentials stored securely in AWS Secrets Manager
@@ -485,16 +376,13 @@ The platform follows production-style cloud security practices through isolated 
 ## Screenshots
 
 ### AWS Architecture
-![Architecture](screenshots/architecture.png)
+![Architecture](screenshots/Architecture.png)
 
 ### Jenkins Pipeline
-![Pipeline](screenshots/pipeline-flow.png)
+![Pipeline](screenshots/jenkins-pipeline.png)
 
 ### CloudFront Frontend
-![Frontend](screenshots/frontend.png)
-
-### CloudWatch Monitoring
-![CloudWatch](screenshots/cloudwatch.png)
+![Frontend](screenshots/frontend-dashboard.png)
 
 ## Technical Challenges and Resolutions
 
@@ -570,13 +458,7 @@ Skipping database initialization
 -e RUN_DB_INIT=true
 ```
 
-### 9. Jenkins Was Using an Outdated Deployment Script
-
-**Challenge:** Jenkins continued using an older deploy-backend.sh file.
-
-**Solution:** The Jenkins pipeline was redesigned to upload the latest deployment script during every deployment.
-
-### 10. Wrong Secret Value Passed to Backend Deployment
+### 9. Wrong Secret Value Passed to Backend Deployment
 
 **Challenge:** The deployment script originally received an EC2 instance ARN instead of the application secret ARN.
 
@@ -603,7 +485,6 @@ Several improvements can further enhance the scalability, security, automation, 
 * Improve infrastructure hardening and IAM policies
 * Implement automated backup and disaster recovery strategies
 * Add container vulnerability scanning in the CI/CD pipeline
-* Introduce multi-environment deployment workflows
 
 ## Cleanup and Destroy Infrastructure
 
@@ -637,4 +518,6 @@ terraform destroy -auto-approve
 
 ## Conclusion
 
-CloudTask Pro demonstrates a production-style AWS deployment workflow using Terraform, Jenkins, Docker, CloudFront, Auto Scaling, RDS, and AWS-native operational services. The project showcases practical experience with Infrastructure as Code, CI/CD automation, cloud networking, deployment automation, monitoring, troubleshooting, and secure cloud architecture design.
+This project demonstrates a production-style AWS 3-tier application platform built using Terraform, Jenkins, Docker, and modern DevOps practices.
+
+The solution combines Infrastructure as Code, CI/CD automation, scalable backend deployment, secure secret management, and operational monitoring to deliver a secure, automated, and scalable cloud environment on AWS.
