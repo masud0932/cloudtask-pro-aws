@@ -24,14 +24,14 @@ CloudTask Pro follows a production-style three-tier AWS architecture designed fo
 ### System Architecture
 
 ```text
-**Users**
+Users
    ↓
 Amazon CloudFront
    ↓
 Amazon S3 (Frontend Hosting)
 
 
-**Users**
+Users
    ↓
 Application Load Balancer (ALB)
    ↓
