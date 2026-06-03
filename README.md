@@ -1,4 +1,4 @@
-# CloudTask Pro — AWS 3-Tier Platform aws
+# CloudTask Pro — AWS 3-Tier Platform
 CloudTask Pro is a production-style full-stack task management platform deployed on AWS using Terraform, Jenkins, Docker, and modern DevOps practices. The project demonstrates a scalable three-tier cloud architecture with automated infrastructure provisioning, CI/CD deployment automation, secure secret management, monitoring, and operational best practices.
 
 The platform enables users to create and manage tasks, organize projects, and monitor dashboard metrics through a modern web interface. The frontend is hosted on Amazon S3 and CloudFront, while the backend is deployed on Docker-based EC2 application servers behind an Application Load Balancer with Auto Scaling support. PostgreSQL is hosted on Amazon RDS within private subnets for secure data storage.
